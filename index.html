@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>股海导航 · 系统学习炒股知识图谱</title>
+<style>
+:root{
+  --bg:#0a0f1e; --bg2:#0e1528; --panel:rgba(15,21,40,.88); --line:rgba(255,255,255,.09);
+  --text:#e8ecf6; --muted:#93a0bd; --dim:#5b6b8c; --accent:#6ea8fe; --ok:#3ecf8e;
+  --c0:#f5b13d; --c1:#4da3ff; --c2:#3ecf8e; --c3:#a78bfa; --c4:#fb7185; --c5:#fb923c; --c6:#2dd4bf;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:radial-gradient(1200px 800px at 70% -10%, #152036 0%, var(--bg) 55%) var(--bg);
+  color:var(--text); overflow:hidden;
+}
+a{color:var(--accent); text-decoration:none;}
+/* ---------- header ---------- */
+header{
+  position:fixed; top:0; left:0; right:0; height:56px; z-index:50;
+  display:flex; align-items:center; gap:16px; padding:0 18px;
+  background:rgba(10,15,30,.82); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px; min-width:230px;}
+.brand .logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#1d2c55,#122); border:1px solid rgba(110,168,254,.5); font-size:16px;}
+.brand h1{font-size:15px; font-weight:700; letter-spacing:.5px;}
+.brand small{display:block; font-size:10.5px; color:var(--muted); font-weight:400; margin-top:1px;}
+.searchwrap{flex:1; max-width:380px; position:relative;}
+.searchwrap input{
+  width:100%; background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--text);
+  border-radius:20px; padding:7px 14px 7px 34px; font-size:13px; outline:none; transition:.2s;
+}
+.searchwrap input:focus{border-color:rgba(110,168,254,.6); background:rgba(255,255,255,.08);}
+.searchwrap .si{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--dim); font-size:13px;}
+.hstats{display:flex; align-items:center; gap:12px; margin-left:auto; font-size:12.5px; color:var(--muted);}
+.progressbar{width:110px; height:6px; border-radius:4px; background:rgba(255,255,255,.08); overflow:hidden;}
+.progressbar i{display:block; height:100%; width:0%; border-radius:4px; background:linear-gradient(90deg,var(--c6),var(--c2),var(--accent)); transition:width .4s;}
+.hbtn{background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:8px; padding:5px 10px; font-size:12px; cursor:pointer; transition:.2s;}
+.hbtn:hover{color:var(--text); border-color:rgba(255,255,255,.25);}
+/* ---------- layout ---------- */
+#app{position:fixed; top:56px; left:0; right:0; bottom:0; display:flex;}
+#left{width:262px; min-width:262px; border-right:1px solid var(--line); overflow-y:auto; padding:14px 12px 40px; background:rgba(12,17,34,.6);}
+#center{flex:1; position:relative; min-width:0;}
+#right{width:368px; min-width:368px; border-left:1px solid var(--line); overflow-y:auto; padding:16px; background:rgba(12,17,34,.6);}
+#right.empty{display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:13px; text-align:center;}
+/* ---------- left: path ---------- */
+.pathhead{font-size:12px; color:var(--dim); letter-spacing:1px; margin:4px 4px 10px; display:flex; justify-content:space-between; align-items:center;}
+.pathhead b{color:var(--muted); font-weight:600;}
+.contbtn{width:100%; margin-bottom:12px; padding:9px; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600;
+  background:linear-gradient(90deg,#1d3a6b,#123); color:#cfe0ff; border:1px solid rgba(110,168,254,.35); transition:.2s;}
+.contbtn:hover{filter:brightness(1.2);}
+.pmod{margin-bottom:12px; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:rgba(255,255,255,.02);}
+.pmod>summary{list-style:none; display:flex; align-items:center; gap:8px; padding:9px 10px; cursor:pointer; font-size:13px; font-weight:600;}
+.pmod>summary::-webkit-details-marker{display:none;}
+.pmod>summary .dot{width:10px;height:10px;border-radius:3px; flex:none;}
+.pmod>summary .cnt{margin-left:auto; font-size:11px; color:var(--dim); font-weight:400;}
+.pmod .items{padding:2px 8px 8px;}
+.pitem{display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; cursor:pointer; font-size:12.5px; color:var(--muted); transition:.15s;}
+.pitem:hover{background:rgba(255,255,255,.05); color:var(--text);}
+.pitem.active{background:rgba(110,168,254,.16); color:#fff;}
+.pitem .ck{width:16px;height:16px;border-radius:5px; border:1.5px solid rgba(255,255,255,.22); flex:none; display:grid; place-items:center; font-size:10px; color:transparent; transition:.2s;}
+.pitem.done .ck{background:var(--ok); border-color:var(--ok); color:#062;}
+.pitem .idx{font-size:10px; color:var(--dim); width:16px; text-align:right; flex:none; font-variant-numeric:tabular-nums;}
+.pitem.done{color:var(--dim);}
+.pitem.done .t{text-decoration:line-through; opacity:.7;}
+.pitem .t{flex:1;}
+/* ---------- center: graph ---------- */
+#graph{position:absolute; inset:0;}
+#graph svg{width:100%; height:100%; display:block;}
+.node{cursor:pointer;}
+.node circle{transition:r .25s, fill-opacity .2s, stroke .2s;}
+.node text.lbl{fill:#c9d4e8; font-size:11px; text-anchor:middle; pointer-events:none;}
+.node text.em{pointer-events:none;}
+.node .halo{fill:none; stroke:var(--accent); stroke-width:1.4; opacity:0; transition:opacity .2s;}
+.node:hover .halo{opacity:.9;}
+.node.selected .halo{opacity:1; stroke-width:2;}
+.node.done circle{stroke-dasharray:none;}
+.node .checkmark{opacity:0; pointer-events:none;}
+.node.done .checkmark{opacity:1;}
+.edge{stroke:rgba(255,255,255,.16); stroke-width:1; pointer-events:none; transition:opacity .25s;}
+.edge.rel{stroke-dasharray:4 4; stroke:rgba(255,255,255,.10);}
+.edge.belong{stroke:rgba(255,255,255,.06);}
+.legend{
+  position:absolute; left:12px; bottom:12px; background:rgba(13,18,36,.85); border:1px solid var(--line);
+  border-radius:12px; padding:10px 12px; font-size:11.5px; display:flex; flex-wrap:wrap; gap:8px; max-width:520px;
+}
+.legend .lg{display:flex; align-items:center; gap:6px; cursor:pointer; padding:3px 6px; border-radius:7px; transition:.15s;}
+.legend .lg:hover{background:rgba(255,255,255,.06);}
+.legend .lg.off{opacity:.35;}
+.legend .dot{width:10px;height:10px;border-radius:3px;}
+.legend .lgt{color:var(--muted);}
+.edgelegend{margin-left:auto; display:flex; gap:12px; color:var(--dim); align-items:center;}
+.edgelegend i{display:inline-block; width:22px; height:0; border-top:1.5px solid rgba(255,255,255,.3); vertical-align:middle; margin-right:4px;}
+.edgelegend i.dashed{border-top:1.5px dashed rgba(255,255,255,.2);}
+.hint{position:absolute; right:12px; bottom:12px; font-size:11px; color:var(--dim); background:rgba(13,18,36,.8); border:1px solid var(--line); padding:7px 10px; border-radius:10px; max-width:300px; line-height:1.7;}
+.empty-state{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--dim); font-size:14px; gap:8px; pointer-events:none;}
+/* ---------- right: detail ---------- */
+.dtag{display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); border:1px solid var(--line); padding:3px 9px; border-radius:20px; margin-bottom:10px;}
+.dtitle{font-size:19px; font-weight:700; margin-bottom:4px; line-height:1.4;}
+.dsub{font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.6;}
+.dsec{font-size:12px; font-weight:700; color:var(--muted); margin:16px 0 8px; letter-spacing:1px; display:flex; align-items:center; gap:6px;}
+.dsec::after{content:""; flex:1; height:1px; background:var(--line);}
+.dlist{list-style:none;}
+.dlist li{position:relative; padding:0 0 8px 18px; font-size:13px; line-height:1.65; color:#d6deee;}
+.dlist li::before{content:""; position:absolute; left:2px; top:9px; width:6px; height:6px; border-radius:2px; background:var(--accent);}
+.dlist.warn li::before{background:#f59e0b;}
+.dlist.do li::before{background:var(--ok);}
+.dlist.warn li, .dlist.do li{font-size:12.8px;}
+.links{display:flex; flex-wrap:wrap; gap:7px;}
+.chip{display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:#cdd8ea;
+  border-radius:16px; padding:5px 11px; font-size:12px; cursor:pointer; transition:.15s; max-width:100%;}
+.chip:hover{border-color:rgba(110,168,254,.5); background:rgba(110,168,254,.12); color:#fff;}
+.chip .cd{width:8px;height:8px;border-radius:2px; flex:none;}
+.dnav{display:flex; gap:8px; margin-top:20px;}
+.dnav button{flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text); font-size:13px; cursor:pointer; transition:.15s;}
+.dnav button:hover{background:rgba(255,255,255,.1);}
+.dnav button.primary{background:linear-gradient(90deg,#1d3a6b,#123); border-color:rgba(110,168,254,.4); color:#cfe0ff; font-weight:600;}
+.dnav button:disabled{opacity:.3; cursor:default;}
+.dmod{padding:2px 0;}
+.dmod .dh{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.dmod .dh .big{width:46px;height:46px;border-radius:12px; display:grid; place-items:center; font-size:22px;}
+.dmod .dh h2{font-size:18px;}
+.dmod .dh small{color:var(--muted); font-size:11.5px; display:block; margin-top:2px;}
+.member{display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13px; color:var(--muted); border:1px solid transparent; transition:.15s;}
+.member:hover{background:rgba(255,255,255,.05); color:var(--text); border-color:var(--line);}
+.member .no{font-size:10px; color:var(--dim); width:18px; font-variant-numeric:tabular-nums;}
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar{width:9px; height:9px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12); border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+@media (max-width:1180px){ #right{position:absolute; right:0; top:0; bottom:0; z-index:40; box-shadow:-10px 0 30px rgba(0,0,0,.4);} #left{width:220px; min-width:220px;} }
+@media (max-width:900px){ #left{display:none;} .brand small{display:none;} }
+
+/* lite highlight */
+#graph svg.lite .node:not(.keep){opacity:.14; transition:opacity .2s;}
+#graph svg.lite .edge:not(.keep){opacity:.04; transition:opacity .2s;}
+#graph svg.lite .node.selected{opacity:1;}
+.node.selected .halo{opacity:1; stroke-width:2;}
+.node.selected .ball{stroke-width:3;}
+.node.done .ball{stroke:#3ecf8e; fill:rgba(62,207,142,.16);}
+.node .checkmark{opacity:0;}
+.node.done .checkmark{opacity:1;}
+#graph svg.hide-m0 .mod-m0,#graph svg.hide-m0 .e-m0{opacity:.05;}
+#graph svg.hide-m1 .mod-m1,#graph svg.hide-m1 .e-m1{opacity:.05;}
+#graph svg.hide-m2 .mod-m2,#graph svg.hide-m2 .e-m2{opacity:.05;}
+#graph svg.hide-m3 .mod-m3,#graph svg.hide-m3 .e-m3{opacity:.05;}
+#graph svg.hide-m4 .mod-m4,#graph svg.hide-m4 .e-m4{opacity:.05;}
+#graph svg.hide-m5 .mod-m5,#graph svg.hide-m5 .e-m5{opacity:.05;}
+#graph svg.hide-m6 .mod-m6,#graph svg.hide-m6 .e-m6{opacity:.05;}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">🧭</div>
+    <div><h1>股海导航</h1><small>系统学习炒股 · 交互式知识图谱</small></div>
+  </div>
+  <div class="searchwrap"><span class="si">🔍</span><input id="search" type="text" placeholder="搜索知识点，如：市盈率 / 止损 / MACD" autocomplete="off"></div>
+  <div class="hstats">
+    <span>进度 <b id="pct" style="color:var(--text)">0%</b> <span id="doneNum">(0/33)</span></span>
+    <div class="progressbar"><i id="pbar"></i></div>
+    <button class="hbtn" id="resetBtn">重置进度</button>
+  </div>
+</header>
+<div id="app">
+  <aside id="left">
+    <div class="pathhead"><span>📚 推荐学习路径</span><b id="pathDone">0/33</b></div>
+    <button class="contbtn" id="contBtn">▶ 继续学习：第一个未学知识点</button>
+    <div id="pathList"></div>
+  </aside>
+  <main id="center">
+    <div id="graph"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">没有匹配的知识点</div>
+    <div class="legend" id="legend"></div>
+    <div class="hint">💡 拖拽节点整理图谱 · 点击查看详情 · 虚线=跨模块关联 · 实线=先修顺序 · ←/→ 沿路径切换</div>
+  </main>
+  <aside id="right" class="empty">
+    <div>👈 点击左侧路径或中间图谱中的任意节点，查看详细知识点</div>
+  </aside>
+</div>
+
+<script>
+"use strict";
+/* ================= 数据 ================= */
+const MODULES = [
+  {id:"m0", name:"认知基石", icon:"🧭", color:"#f5b13d",
+   summary:"这是对抗性审查后新增的第一性原理模块：先弄清股市的钱从哪来、为什么多数人会亏钱，建立“正期望 + 低成本 + 强纪律”的底层框架，再学具体工具。",
+   goals:["理解回报的三个来源，分清你赚的是哪种钱","承认市场有效性的存在，找到自己的真实优势","把指数基金当作基准，主动策略必须能跑赢它","用期望值、成本、行为偏差武装自己的决策系统"]},
+  {id:"m1", name:"基础认知", icon:"🏗️", color:"#4da3ff",
+   summary:"股票是什么、不同市场规则、交易成本与常用术语。先把“游戏规则”搞清楚，再谈赚钱——绝大多数亏损源于对规则和市场本质的误解。",
+   goals:["能一句话讲清股票的本质","清楚 A股/港股/美股 的核心规则差异","算得清一笔交易的真实成本","认识 PE/PB/换手率等常用术语"]},
+  {id:"m2", name:"基本面分析", icon:"💼", color:"#3ecf8e",
+   summary:"判断一家公司值不值得买：三张报表、关键财务指标、估值方法、行业与公司研究、宏观环境。这是长线赚钱的真正地基。",
+   goals:["读懂三张报表并交叉验证","掌握 ROE、毛利率、经营现金流等关键指标","用 PE/PB/PEG 做横向与历史对比","建立“行业空间 × 竞争格局 × 护城河”的分析框架"]},
+  {id:"m3", name:"技术分析", icon:"🛰️", color:"#a78bfa",
+   summary:"辅助择时的工具包：K线、趋势、均线、指标、形态。记住一条：它是观察市场情绪与趋势的镜子，不是预测未来的水晶球。",
+   goals:["理解量价关系，而不是死记图形","会用均线判断趋势与支撑压力","理解 MACD/KDJ/RSI/布林带的原理与适用场景","知道形态必须“确认”才有效"]},
+  {id:"m4", name:"交易系统与策略", icon:"⚙️", color:"#fb7185",
+   summary:"把风格、买入条件、卖出条件、仓位规则写成可执行的系统，并用回测检验。从“凭感觉”升级为“按规则”，这是散户少数能建立的真正优势。",
+   goals:["先定自己的投资风格，不漂移","写出一页纸可量化的交易规则","理解回测的价值与陷阱，避免过拟合","了解几类经典策略的性格与适用环境"]},
+  {id:"m5", name:"风险管理", icon:"🧯", color:"#fb923c",
+   summary:"活下来比赚得多更重要。仓位控制、止损止盈、分散集中、心态管理与背后的数学——风控不是限制收益，而是保证你还留在牌桌上。",
+   goals:["掌握仓位 = 风险预算 ÷ 止损幅度的数学","买入前就定好止损与止盈","理解“相关性”比“数量”更决定分散效果","识别情绪在替自己下单的时刻"]},
+  {id:"m6", name:"实操与复盘", icon:"🚀", color:"#2dd4bf",
+   summary:"模拟盘 → 小资金实盘 → 坚持复盘 → 持续学习。知识要变成能力，唯一的路径是带着规则去练习，并不断从错误中修正。",
+   goals:["用模拟盘跑通完整流程与策略","用小资金实盘训练纪律与心态","建立交易日志，复盘“决策质量”而非“结果”","建立稳定的输入节奏：书、财报、研报"]}
+];
+
+const NODES = {
+  /* ---------- 模块0：认知基石 ---------- */
+  "m0a":{id:"m0a", mod:"m0", icon:"💰", title:"回报从哪里来",
+    summary:"股票长期回报有三个来源：企业盈利增长、股息分红、估值倍数变化（情绪）。前两个是“正和游戏”，第三个是“零和游戏”。看清你赚的是哪种钱，才不会被短期波动迷惑。",
+    points:["长期看：股价 ≈ 盈利 × 估值倍数。盈利是锚，估值是钟摆。","回报三来源：①盈利增长 ②分红 ③估值提升。①②可积累，③会均值回归。","短线交易赚的是其他交易者的钱，扣除手续费后是负和游戏；长线投资赚的是企业创造的钱，是正和游戏。","买入前问自己：如果没人接盘，我靠什么赚钱？答不上来就是投机。","牛市里很多人赚的是估值抬升的钱，却误以为是自己的能力——这是最危险的错觉。"],
+    myths:["把“赚了钱”等同于“我看对了”：可能只是市场情绪抬高了估值。","分不清“企业赚钱”和“股价上涨”，把彩票当股票买。"],
+    actions:["打开任意一只持仓，判断：它的上涨来自盈利增长还是估值提升？","读一份财报后写出：这家公司未来5年靠什么赚更多钱？"],
+    related:["m1a","m0c","m2c"]},
+  "m0b":{id:"m0b", mod:"m0", icon:"🎯", title:"市场有效性",
+    summary:"市场上有大量聪明资金在竞争，公开信息大部分已经反映在价格里。打败市场很难，想跑赢，你需要一个明确的、可证伪的优势。",
+    points:["有效市场假说三档：弱式（历史价格无用）、半强式（公开信息无用）、强式（一切无用）。现实介于弱式与半强式之间。","结论不是“市场永远正确”，而是“你没有理由默认自己比市场知道得更多”。","长期看，90% 以上的主动基金跑不赢对应指数，扣除费用后更明显。","要跑赢，需要至少一种优势：信息优势、分析优势、行为纪律优势。","技术指标不是信息优势——它是公开价格数据的加工品。"],
+    myths:["“我比市场聪明”是大多数亏损的起点。","“别人都亏说明市场无效，所以我更容易赚”：无效不等于你有利。"],
+    actions:["诚实给自己打分：你相对市场的优势是什么？写不下来，就说明还没有。","把“市场有效性”当作默认假设，用证据而不是信心去推翻它。"],
+    related:["m0c","m3a","m4c"]},
+  "m0c":{id:"m0c", mod:"m0", icon:"🏛️", title:"指数基金基准",
+    summary:"对大多数人，正确的起点是低成本指数基金（如沪深300、标普500）。主动选股应该是“确认能力之后”的选择，而不是默认选项。",
+    points:["指数基金成本低、天然分散、无选股与择时风险，长期年化约 8–10%（历史区间，不保证未来）。","巴菲特十年赌约：标普500 指数战胜了华尔街顶尖主动基金组合。","把指数当作基准：你的任何主动策略都要能跑赢它，否则不如直接买指数。","指数投资还解决了大部分行为问题：不用盯盘、不会追涨杀跌。","先建立指数仓位作为锚，再用亏得起的钱小仓位验证主动能力。"],
+    myths:["“指数涨太慢、没意思”——多数人连指数都跑不赢。","“现在点位高不能买”——长期投资者靠定投与持有穿越周期。"],
+    actions:["开设一个指数基金定投，把它当作你的“对照实验组”。","记录：我的主动操作一年后跑赢它了吗？差距就是能力的真实度量。"],
+    related:["m0b","m1a","m4a","m5c","m6d"]},
+  "m0d":{id:"m0d", mod:"m0", icon:"⚖️", title:"期望值与赔率",
+    summary:"投资的本质是下注：期望 = 胜率×平均盈利 − 败率×平均亏损 − 成本。先算赔率再出手；亏多少比赚多少更重要，因为亏损是不对称的。",
+    points:["期望公式：即使胜率只有 40%，只要平均盈利是平均亏损的 2 倍，期望仍为正。","“错了亏多少、对了赚多少”必须在买入前想清楚，这就是赔率思维。","亏损的不对称：-50% 需要 +100% 才能回本。所以“少亏”的数学优先级高于“多赚”。","没有正期望的把握时，持有现金也是一种仓位，不交易可以是对的。","胜率、赔率、成本三者都要估计，任何一个离谱，期望就可能为负。"],
+    myths:["“胜率高=能赚钱”：忽略了赔率与成本。","“亏一点没事，涨回来就好”：没有止损纪律，小亏会滚成大亏。"],
+    actions:["每笔交易前写下：预期胜率、止盈位、止损位，套入公式算期望。","如果算不出正期望，这笔交易就不该做。"],
+    related:["m4c","m5b","m5a","m5e"]},
+  "m0e":{id:"m0e", mod:"m0", icon:"🧾", title:"交易成本",
+    summary:"每次交易都有成本：佣金、印花税、滑点、买卖价差。高频交易在扣成本后是负和游戏——成本是散户最确定、最常被忽略的“敌人”。",
+    points:["A股成本构成：佣金（约万2.5 起，最低5元）+ 印花税（卖出时，2023年8月后为 0.05%）+ 过户费；ETF 无印花税。","港股有印花税与较高佣金；美股佣金低，但注意汇率与预扣税。","滑点：实际成交价与你的预期价的差，市价单尤其明显。","简单估算：A股单边成本约 0.1–0.2%，一年交易 50 次，成本就是几个点。","结论：交易越少、持有越久，成本占比越低——这不仅是性格偏好，更是数学结果。"],
+    myths:["只算佣金、不算滑点与印花税。","“手续费是小钱”：复利计算下，高频交易的成本会吃掉大部分超额收益。"],
+    actions:["统计自己过去一年的交易成本总额，算它占本金与收益的比例。","把“降低交易频率”作为一项明确的规则写进交易系统。"],
+    related:["m1c","m6c","m0d","m4b"]},
+  "m0f":{id:"m0f", mod:"m0", icon:"🧠", title:"行为金融学",
+    summary:"散户亏损的第一大原因不是知识不足，而是人性：损失厌恶、处置效应、过度自信、确认偏误、从众与锚定。规则化是唯一可靠的解药。",
+    points:["损失厌恶：亏 100 的痛苦约等于赚 200 的快乐 → 导致拿不住盈利、死扛亏损。","处置效应：过早卖掉上涨的股票，却长期持有下跌的股票。","过度自信：连续几次成功就加杠杆、加仓位，把运气当能力。","确认偏误：只找支持自己判断的信息，忽略反面证据。","锚定：被买入价或历史高点锚住，影响“现在该不该走”的判断。","解药：把决策规则化、写下来、减少盘中盯盘、用清单决策。"],
+    myths:["“我能控制情绪”——研究反复证明，偏差在压力下会自动出现，与智商无关。","“这次不一样”——每一次泡沫里的经典台词。"],
+    actions:["建立交易日志，每次记录当时的情绪状态，复盘时对照这份清单。","给自己设一条熔断规则：单月亏损 X% 强制停手一周。"],
+    related:["m5d","m6c","m0d"]},
+  /* ---------- 模块1：基础认知 ---------- */
+  "m1a":{id:"m1a", mod:"m1", icon:"📜", title:"股票的本质",
+    summary:"股票代表公司所有权的一部分。你买的不是一串代码，而是一笔未来现金流的索取权：公司赚钱你分享（分红与成长），公司亏钱你承担。",
+    points:["一股 = 公司的一小份所有权：收益来自盈利增长与分红。","长期看，股价与盈利高度相关：盈利涨 10 倍，估值不变时股价也趋向涨 10 倍。","股权 vs 债券：股权无固定回报、风险更高，所以长期要求更高的回报（风险溢价）。","股票 ≠ 彩票：买之前先回答“这家公司靠什么赚钱”。","市场短期是投票机（情绪），长期是称重机（盈利）——格雷厄姆。"],
+    myths:["把股票当代码、当筹码，只盯图形不研究公司。","“好公司股价就会一直涨”：好公司还要好价格。"],
+    actions:["对每只持仓，用一句话写出它的商业模式：谁付钱、为什么付钱、凭什么持续。","读一家公司最近一份年报的“致股东信”。"],
+    related:["m0a","m2a","m0c"]},
+  "m1b":{id:"m1b", mod:"m1", icon:"🌏", title:"市场与板块",
+    summary:"A股、港股、美股规则差异很大；主板、创业板、科创板、北交所定位不同，风险与门槛也不同。先搞清楚你在哪个“球场”上。",
+    points:["A股：T+1、有涨跌停（主板10%、创业/科创20%、北交所30%、ST 5%）、以散户为主。","港股：T+0、无涨跌停、可做空、机构为主；美股：T+0、无涨跌停但有熔断（7%/13%/20%）。","交易时间：A股 9:30–11:30 / 13:00–15:00；港股 9:30–12:00 / 13:00–16:00；美股北京时间 21:30/22:30 – 4:00/5:00（随夏令/冬令变化）。","板块定位：主板=成熟大盘蓝筹；创业板=成长型企业（2年经验+10万门槛）；科创板=硬科技（50万+2年）；北交所=创新型中小企业。","内地参与港股：通过港股通（深/沪港通），有标的与额度限制。"],
+    myths:["“T+0 的市场一定更好”——规则没有好坏，只有适不适合你的策略。","“创业板涨跌停 20% 所以赚得快”——波动大，亏得也快。"],
+    actions:["确认你的账户能交易哪些板块与市场，别买错门槛。","对比同一公司在 A股与港股（AH股）的价格差异，体会市场分割。"],
+    related:["m1c","m6a","m2e"]},
+  "m1c":{id:"m1c", mod:"m1", icon:"🕐", title:"交易规则",
+    summary:"看懂规则才能活得久：T+1、涨跌停、费用、除权除息、委托类型、集合竞价。规则层面的无知会直接变成亏损。",
+    points:["T+1：A股当天买入次日才能卖出；融资融券、可转债等另有规则。","涨跌停是“价格边界”不是“安全保证”：涨停封不住会开板，跌停不代表超跌。","除权除息：分红后股价按分红金额自动下调，账户总资产不变——不是白捡的钱。","委托类型：限价单（指定价格）vs 市价单（按当前市场成交）；集合竞价 9:15–9:25。","ST/*ST 有 5% 涨跌幅与退市风险；退市整理期规则要了解。","打新：A股需市值配售；注册制后破发已不罕见。"],
+    myths:["“分红=送钱”：除息日股价会相应下调，没分红前后没有额外收益。","“跌停股一定是机会”：跌停可能是基本面崩坏，也可能是情绪，需要辨别。"],
+    actions:["通读一遍券商APP里的《交易规则》与费用说明。","实测一笔小单，记录佣金、印花税、滑点，理解真实成交成本。"],
+    related:["m0e","m5b","m1b"]},
+  "m1d":{id:"m1d", mod:"m1", icon:"📚", title:"常用术语",
+    summary:"建立术语表是看懂财报、研报和行情的第一步：市值、PE、PB、ROE、换手率、量比……每个词背后都是一种观察视角。",
+    points:["市值 = 股价×总股本；流通市值 = 股价×流通股本。大盘/中盘/小盘由此划分。","PE（市盈率）= 市值 ÷ 净利润（TTM=滚动12个月）；PB（市净率）= 市值 ÷ 净资产。","ROE（净资产收益率）= 净利润 ÷ 净资产，是长期复利的发动机。","换手率 = 成交量 ÷ 流通股本，衡量交易活跃度；量比 = 今日每分钟均量 ÷ 近5日每分钟均量。","其他常用：EPS（每股收益）、股息率、PS（市销率）、PEG、自由现金流。"],
+    myths:["“PE 越低越便宜”：要结合行业、增速、盈利质量看，周期股尤其容易误导。","“换手率高=主力在建仓”：也可能是出货或情绪过热。"],
+    actions:["打开行情软件，把每个术语对应到一只真实股票的数字上。","把 10 个术语用“人话”各写一句解释，讲得清楚才算懂。"],
+    related:["m2c","m2b","m1a"]}
+,
+  /* ---------- 模块2：基本面分析 ---------- */
+  "m2a":{id:"m2a", mod:"m2", icon:"📊", title:"财务报表入门",
+    summary:"三张报表回答三个问题：资产负债表=家里有什么、欠多少（家底）；利润表=生意赚不赚钱（生意）；现金流量表=钱真的到账了吗（现金）。",
+    points:["资产负债表：资产 = 负债 + 所有者权益。看资产质量（应收、存货占比）与负债结构（短债、有息负债）。","利润表：营收 → 毛利 → 净利。注意利润可能是“纸面利润”，可能被会计手法调节。","现金流量表：经营 / 投资 / 筹资三类现金流。经营现金流是公司自己“造血”的能力。","交叉验证：净利润很高但经营现金流长期为负 → 警惕（应收堆积、存货积压或利润造假）。","三张表要连起来看：利润表的结果最终要变成资产负债表上的资产和现金流量表里的现金。"],
+    myths:["“利润高=真赚钱”：利润可以被调节，真金白银的现金流很难长期造假。","“只读利润表就够”：很多暴雷公司死在资产负债表与现金流上。"],
+    actions:["找一家公司最近 3 年三张表，练习“用三句话讲清它的生意与风险”。","对每一家计划买入的公司，至少看最近 2 个季度报告原文。"],
+    related:["m2b","m1a","m2d"]},
+  "m2b":{id:"m2b", mod:"m2", icon:"📈", title:"关键财务指标",
+    summary:"从三张表里提炼出一组核心指标：营收与净利增速、毛利率、净利率、资产负债率、经营现金流、ROE、自由现金流。指标之间要互相印证。",
+    points:["毛利率：定价权与护城河的第一信号；净利率：费用控制与规模效应。","增速：营收/净利增速是成长性的来源；“增速下滑”比“增速为负”更常见、更值得警惕。","资产负债率：过高=财务脆弱；但行业差异巨大（银行地产天然高杠杆），必须同行比较。","ROE 长期 15%+ 是优秀公司的常见门槛；用杜邦拆解看它来自 净利率×周转率×杠杆。","自由现金流 = 经营现金流 − 资本开支，是分红与回购的源泉。","指标要纵向（自己的历史）与横向（同行业）双对比。"],
+    myths:["单看一个指标下结论（“ROE 高就是好”）。","不区分行业：用消费股的负债标准衡量银行股。"],
+    actions:["用杜邦拆解分析一家公司：它的 ROE 靠利润率、周转率还是杠杆？","列一张 3 年对比表：营收、净利、毛利、经营现金流、负债率。"],
+    related:["m2a","m2c","m1d"]},
+  "m2c":{id:"m2c", mod:"m2", icon:"💎", title:"估值方法",
+    summary:"估值是比较的艺术：PE、PB、PS、PEG、股息率、DCF。贵贱永远是相对的——要和行业、自身历史、成长性比，而不是看绝对值。",
+    points:["PE 适合盈利稳定的公司；周期股要小心：低 PE 可能是盈利顶峰（陷阱），高 PE 可能是盈利底部（机会）。","PB 适合银行/地产等重资产行业；PS 适合尚未盈利的成长股。","PEG = PE ÷ 盈利增速，<1 常被视为相对便宜，但只适合成长稳定期，且增速不可靠时无意义。","DCF（现金流折现）理论上最正确，但依赖大量假设——用来建立思维框架，不要追求精确数字。","估值是钟摆：情绪让价格偏离价值，均值回归是长期规律；好公司也要好价格。"],
+    myths:["“低 PE=便宜”：不区分行业、周期与增长。","“贵的东西一定跌”：高估值可以通过高增长消化，反之亦然。"],
+    actions:["同行业选两只股票，做 PE/PB 横向对比，再与各自 5 年历史区间对比。","对一只股票手工做一次简化 DCF，体会“假设一变，结论就变”。"],
+    related:["m1d","m2b","m0a","m2d"]},
+  "m2d":{id:"m2d", mod:"m2", icon:"🔬", title:"行业与公司研究",
+    summary:"选公司先选行业：空间、增速、竞争格局、政策环境；再看公司：护城河、商业模式、管理层与治理。行业决定赔率，公司决定胜率。",
+    points:["行业空间：天花板越高成长越久，渗透率是核心观察指标。","竞争格局：格局好（龙头集中、壁垒清晰）往往比行业高增速更重要。","护城河四类：无形资产（品牌/专利/牌照）、转换成本、网络效应、成本优势。","商业模式：赚谁的钱、怎么赚、赚得是否可持续、是否依赖输血。","管理层与治理：激励是否与股东一致、诚信记录、资本配置能力（是否乱投资/乱并购）。","“好行业+好公司+好价格”三者齐备才动手，缺一个就要降低仓位或放弃。"],
+    myths:["“行业好=公司好”：行业里也有平庸公司与输家。","“好公司=好股票”：还要看价格与预期是否已经透支。"],
+    actions:["写一页纸公司研究：生意、护城河、财务、风险、合理估值、当前价格。","跟踪行业里 2–3 家龙头，读它们的季报对比增速与利润率。"],
+    related:["m2a","m2e","m2c","m6d"]},
+  "m2e":{id:"m2e", mod:"m2", icon:"🌐", title:"宏观经济基础",
+    summary:"利率、通胀、货币政策、经济周期会系统性影响股市的风格与节奏。宏观用于定“大方向与仓位”，不用于猜“明天涨跌”；过度沉迷宏观预测是浪费。",
+    points:["利率是股票的“地心引力”：利率下行 → 估值抬升；利率上行 → 估值承压。成长股对利率尤其敏感。","通胀与货币政策：加息/缩表收紧流动性（利空估值），降息/降准释放流动性。","经济周期：复苏→过热→滞胀→衰退，不同阶段利好不同资产（成长/周期/消费/防御）。","观察指标：CPI、PPI、PMI、M2/社融、十年期国债收益率、汇率、北向资金。","用法：宏观定仓位方向（比如高估值环境降杠杆），微观（基本面+估值）定具体标的。"],
+    myths:["把宏观预测当交易信号：预测对了也未必能赚钱，还常常滞后。","“大盘不行就清仓”：长期投资者用时间换空间，短期波动是买入机会而非威胁。"],
+    actions:["每月花 10 分钟记录：利率方向、M2/社融、CPI、PMI，判断当前周期位置。","把宏观判断写成“影响仓位，不影响选股”的一句话。"],
+    related:["m2d","m5a","m1b"]},
+  /* ---------- 模块3：技术分析 ---------- */
+  "m3a":{id:"m3a", mod:"m3", icon:"🕯️", title:"K线与成交量",
+    summary:"K线是价格与情绪的压缩记录，成交量是价格背后的燃料。单根K线意义有限，量价配合才更有信号价值。记住：技术分析是观察工具，不是预测机器。",
+    points:["每根K线记录开盘/收盘/最高/最低：实体反映多空力量，影线反映反攻与失败。","单根K线（长阳/长阴/十字星）信号弱，组合形态（吞没、晨星/暮星、红三兵）才有统计意义。","量价关系：放量突破更可信、缩量回调更健康；高位放量滞涨要警惕出货。","技术分析三大前提——价格反映一切、趋势会延续、历史会重演——都值得怀疑，尤其第三条。","证据层面：纯技术信号在扣除成本后大多没有稳定超额收益，把它当“择时辅助”而非“圣杯”。"],
+    myths:["把单根K线当买入信号。","“放量=主力进场”：放量也可能是一致性出货，需要位置配合判断。"],
+    actions:["复盘一只股票大涨与大跌阶段的量价特征，写出 3 条共性规律。","用模拟盘验证一个“缩量回踩均线”的简单打法，统计成功率。"],
+    related:["m0b","m3b","m3d"]},
+  "m3b":{id:"m3b", mod:"m3", icon:"📉", title:"趋势与均线",
+    summary:"趋势是你的朋友：高点低点不断抬高=上升趋势。均线是趋势的平滑器，5/10/20 看短期，60 看中期，120/250 看长期；250 日线≈牛熊分界。",
+    points:["趋势判断：上升=高点低点抬高；下降=高点低点降低；横盘=震荡市。先定状态，再定打法。","均线系统：多头排列（5>20>60>250）确认上升趋势；跌破关键均线需警惕转弱。","支撑与压力：前期高低点、整数关口、均线位置；突破/跌破要看成交量确认。","均线天然滞后：趋势交易者的盈利来自“跟随大趋势”，代价是震荡市反复止损。","60/250 日均线的位置关系（金叉/死叉）常用于判断中期牛熊。"],
+    myths:["“金叉必涨”：均线是滞后的描述，不是领先的预言。","在震荡市里用均线系统：会被反复打脸，应先判断市场状态。"],
+    actions:["在行情软件里叠加 20/60/250 日均线，标记出近 3 年的牛熊区间。","用“价格站上 20 日线持有、跌破离场”的简单规则做一段历史回测。"],
+    related:["m3a","m4d","m3c"]},
+  "m3c":{id:"m3c", mod:"m3", icon:"📐", title:"常用指标",
+    summary:"MACD、KDJ、RSI、布林带是四大常用指标。重点是理解它们的原理和适用场景，而不是死记“金叉买、死叉卖”——每个指标都有自己的性格。",
+    points:["MACD：趋势+动量，看 DIF/DEA 与红绿柱。适合趋势行情，震荡市频繁失真。","KDJ：超买超卖摆动指标，适合震荡市；趋势市中会长期钝化（超买还能更超买）。","RSI：强弱指标，>70 超买、<30 超卖；强势股可以长期超买，不要机械抄底。","布林带：均值回归工具，价格触上下轨常引发反向运动；但强趋势中价格会“打轨道”。","所有指标都是价格/成交量的函数：指标只是观察角度，不是原因，更不是未来。","指标越多越矛盾：选 1–2 个与你风格匹配的，用到底。"],
+    myths:["把指标当圣杯，金叉死叉机械交易。","用多个指标“共振确认”才敢出手：过度确认会错过大多数机会，并放大滞后。"],
+    actions:["选一个指标，先读它的计算公式，再在历史K线上手动画一遍，理解它的滞后与钝化。","把“只用 1 个主指标 + 1 个辅助确认”写进自己的交易规则。"],
+    related:["m3b","m4c","m3d"]},
+  "m3d":{id:"m3d", mod:"m3", icon:"🔺", title:"形态识别",
+    summary:"头肩顶底、双顶双底、三角形、旗形……形态是人群心理留下的“化石”。但形态必须出现在大涨/大跌之后、且完成“确认”（突破颈线/趋势线）才有意义。",
+    points:["反转形态：头肩顶/底、双顶/双底、圆顶底——出现在大涨大跌之后才有效，中途形成毫无意义。","持续形态：三角形、旗形、矩形——出现在趋势中途，通常延续原方向。","确认是生命线：突破颈线/趋势线（最好放量）才算成立，未确认前只是假设。","形态识别主观性强：同一图形有人看多有人看空，必须结合位置、量能、基本面。","失败率高是常态：形态越“标准”，越多人看到，越可能失效。","形态给出的不是“一定涨”，而是“如果突破，盈亏比通常不错”——回到期望值思维。"],
+    myths:["提前抢跑“即将形成”的形态：等确认，损失的是小段利润，换来的是确定性。","把所有历史图形套到当下：“每次都能找到相似图形”恰恰说明它没有预测力。"],
+    actions:["找 10 个已走完的历史形态，统计确认后的成功/失败比例。","把“形态必须确认 + 计算盈亏比”写进自己的买入清单。"],
+    related:["m3a","m4c","m3b"]}
+,
+  /* ---------- 模块4：交易系统与策略 ---------- */
+  "m4a":{id:"m4a", mod:"m4", icon:"🧭", title:"投资风格",
+    summary:"先定风格再谈策略：长线价值（数月–数年）、中线波段（数周–数月）、短线/日内（数天–日内）。风格决定方法、频率与心态，由你的时间、性格、资金属性决定。",
+    points:["长线价值：重基本面与估值，忽略短期波动，适合有主业的上班族；收益来源=企业成长+分红。","中线波段：基本面选股 + 技术择时，把握趋势与板块轮动，需要一定的盯盘时间。","短线/日内：重技术、情绪、资金流，对时间、纪律、心理要求最高——统计上大多数人不适合。","选择依据三问：每天能投入多少时间？能承受多大回撤？资金多久不用？","先精通一种风格再考虑扩展；风格漂移（拿不住长线、又舍不得割肉）是亏损常见根源。","无论哪种风格，都要求你有正期望和可验证的规则，否则只是“换一种方式亏钱”。"],
+    myths:["“短线来钱快”：高频交易扣成本后是负和游戏，职业日内交易者大多亏损。","“长短结合、灵活切换”：新手做必乱，先做减法。"],
+    actions:["诚实回答上面三问，把自己的风格写死在交易规则第一页。","用模拟盘分别跑一种长线选股法和一种均线波段法各 3 个月，感受差异。"],
+    related:["m0c","m6a","m4d"]},
+  "m4b":{id:"m4b", mod:"m4", icon:"📋", title:"交易规则",
+    summary:"把“什么时候买、什么时候卖、买多少”写成可量化、可执行的规则，而不是感觉。纪律是散户少数能建立的真正优势。",
+    points:["买入条件 = 选股标准（基本面 checklist）+ 择时标准（估值/技术信号），全部满足才动手。","卖出条件分三类：达到目标价、逻辑破坏（基本面变坏）、触及止损。","仓位规则：单只上限（如 ≤20%）、单笔亏损上限（如总资金 2%）、分批建仓方式。","规则必须能量化：“业绩好的公司”不是规则，“ROE>15% 且 PE<30 且增速>10%”才是。","每条规则都要能回答“怎么验证它有效”，否则只是愿望清单。","建立交易日志，记录每笔交易的理由、执行偏差、结果与情绪。"],
+    myths:["“规则太死板，会错过机会”：恰恰相反，没有规则会让你错得更稳定。","“我记性好，不用写下来”：记忆会被盈利和亏损扭曲，写下来才能复盘。"],
+    actions:["写一份不超过一页的《我的交易规则书》：选股、择时、仓位、止损、止盈各一条。","打印贴墙：每次下单前对照 checklist，任何一条不满足就不买。"],
+    related:["m4c","m5b","m5a","m6c"]},
+  "m4c":{id:"m4c", mod:"m4", icon:"🧪", title:"回测与验证",
+    summary:"用历史数据检验策略是否有效，但回测通过≠实盘能赚。真正要掌握的是回测的陷阱：过拟合、未来函数、幸存者偏差、未计成本、极端行情。",
+    points:["回测流程：定义规则 → 编码/用平台 → 跑历史 → 统计胜率、盈亏比、年化、最大回撤。","样本外验证：参数固定后在另一段时间/市场测试，避免“拟合历史”。","四大陷阱：①过拟合（参数太多）②未来函数（用了当时拿不到的数据）③幸存者偏差（只看活到今天的股票）④未计成本（佣金/滑点/涨跌停无法成交）。","实盘会打折：滑点、冲击成本、心理变形会让回测收益显著缩水。","连续亏损期是正常波动：回测要看“最差情况下你扛不扛得住”，而不只是总收益。","一个策略的收益曲线越漂亮，越要怀疑它是否过拟合。"],
+    myths:["“回测赚钱=稳了”：回测是筛选器，不是印钞机。","只看总收益、不看最大回撤：50% 回撤需要 100% 上涨才能回本。"],
+    actions:["用聚宽/米筐/Backtrader 等工具跑通一个最简单的均线策略，先学会流程。","对自己心仪的策略做一次“换时间段再测”，记录结果差异。"],
+    related:["m3c","m0d","m5e","m4d"]},
+  "m4d":{id:"m4d", mod:"m4", icon:"🗂️", title:"策略库与样例",
+    summary:"了解几类经典策略的性格：价值、红利、动量/趋势、网格、打新/套利。每个策略都有自己的收益来源与不适用的市场——选适合你的，而不是“最好”的。",
+    points:["价值投资：低估值+优质，赚均值回归与企业成长的钱，周期 3–5 年，考验耐心。","红利策略：高股息+低波动，赚分红，防御属性强，适合震荡与熊市。","动量/趋势：强者恒强，赚趋势延续，趋势市表现好，震荡市连续止损。","网格交易：震荡市高抛低吸，趋势市要么踏空、要么套牢——必须搭配区间判断。","可转债打新/低价策略：低风险增强，注意信用风险与强赎规则。","任何策略都有“不适用的市场”——这不是策略的 bug，而是它的一部分；先知道它怕什么。"],
+    myths:["“找到一个万能策略就财务自由了”：不存在。","“别人赚钱的策略我照搬就行”：策略与性格、资金、执行能力强绑定。"],
+    actions:["从上面挑 1 个策略，读透它的规则，用模拟盘跑 3 个月。","写出它的三个“不适用的市场场景”和你的应对。"],
+    related:["m4a","m4c","m3b"]},
+  /* ---------- 模块5：风险管理 ---------- */
+  "m5a":{id:"m5a", mod:"m5", icon:"⚓", title:"仓位控制",
+    summary:"仓位是风险的第一道闸门：永不满仓单只、根据确定性与波动率决定单笔仓位、根据市场环境决定总仓位。现金不是失败，是期权。",
+    points:["总仓位按市场状态调节（示例）：趋势向好 70–80%、震荡 50%、熊市 20–30%，因人而异并写进规则。","单只股票上限：一般不超过总资金 20%，新手更保守；单笔亏损上限（如 2%）优先于仓位直觉。","分批建仓：金字塔加仓（越涨加得越少）、倒金字塔止损，避免高位重仓。","仓位与信心匹配：研究越深、确定性越高，仓位可以越高，但永远设硬上限。","现金是期权：手里有子弹，才能在错杀时买得到；满仓意味着失去选择权。","“仓位轻赚得少”是错觉：复利的前提是活得久。"],
+    myths:["“满仓干，不然赚得少”：一次大回撤可能抹掉多年的收益。","“仓位管理是资金多的人的事”：资金越小越输不起，越需要纪律。"],
+    actions:["制定自己的仓位矩阵：市场状态 × 确定性 → 仓位比例，写进规则书。","检查当前持仓：任何一只超过 20% 就分批降下来。"],
+    related:["m4b","m5c","m2e","m5e"]},
+  "m5b":{id:"m5b", mod:"m5", icon:"🛡️", title:"止损与止盈",
+    summary:"买入前就想好：错了怎么办、对了何时走。止损不是认输，是防止大亏的保险；止盈让利润落袋。两者合起来定义了你这笔交易的赔率。",
+    points:["止损三式：固定比例（如 -8%）、技术位（跌破支撑/均线）、逻辑止损（基本面变坏）——选一种并执行。","止损宽度要与波动率匹配：高波动股票用更宽止损 + 更小仓位，风险等价（回到仓位公式）。","止盈三式：目标价（到价分批卖）、移动止盈（从高点回撤 X% 离场）、估值/逻辑兑现（高估时分批卖）。","不止损的代价：-50% 需要 +100% 回本；小亏变大亏是散户第一杀手。","止损被扫后股价又涨是常态：这是保险的“保费”，止损的价值在于截断尾部风险。","止损要提前设好并写下来：盘中临时决定 = 情绪决定。"],
+    myths:["“止损就是割肉认输”：止损是把不确定变成确定的小亏。","“它一定会涨回来”：退市股、价值毁灭的股票永远不会。"],
+    actions:["每次下单前把止损价写在订单备注里，没有止损就不买。","统计一年里“止损后上涨”的次数，接受它作为保费成本。"],
+    related:["m0d","m4b","m5d","m1c"]},
+  "m5c":{id:"m5c", mod:"m5", icon:"🌿", title:"分散与集中",
+    summary:"分散降低单一个股风险，但过度分散稀释收益。关键不是数量，而是相关性：10 只同行业股票 ≈ 1 只。跨行业、跨资产才叫真分散。",
+    points:["相关性比数量重要：持仓要跨行业、跨风格（成长/价值）、必要时跨资产（股/债/现金）。","适度集中：重仓自己研究最深的 3–5 只，收益更好，但前提是研究深度配得上仓位。","新手路径：先靠指数/多行业分散站稳，研究能力提升后再谈集中。","分散的真义：任何单一坏消息都不能让你伤筋动骨——即使一只暴雷，组合仍可承受。","“过度分散”的问题：跟踪不过来、单只研究深度不足、手续费占比上升。","集中不是梭哈：集中 + 严格止损 + 上限仓位才是一套完整逻辑。"],
+    myths:["“数量多=分散好”：同涨同跌的 10 只股票和 1 只没区别。","“分散就没收益”：分散是拿部分收益换生存概率，长期是划算的。"],
+    actions:["列出持仓：计算最大单只占比、行业集中度，把相关性高的合并评估风险。","如果持仓超过 8 只且都没深研，考虑换成指数基金。"],
+    related:["m5a","m0c","m5d"]},
+  "m5d":{id:"m5d", mod:"m5", icon:"🧘", title:"心态管理",
+    summary:"亏损后的冲动、盈利后的膨胀，都是系统性风险。心态不是靠“忍”，而是靠规则化与减少暴露：写下来、定好价、少盯盘。",
+    points:["追涨杀跌、频繁交易、急于翻本：这是情绪在替你下单，不是你的策略。","对策：决策提前写下来、买卖价提前设定、减少盘中盯盘次数（如每天只看收盘）。","连续亏损后强制休息：亏损达阈值（如单月 -10%）停手一周，防止报复性交易。","用亏得起的钱：资金属性决定心态，杠杆或急用钱必然让决策变形。","把交易当概率游戏：单笔结果随机，长期结果由规则决定，别用单笔论英雄。","盯住“执行质量”而不是“当天盈亏”：执行好，盈亏是统计结果。"],
+    myths:["“心态好就能赚钱”：心态是纪律与流程的结果，不是天赋或鸡汤。","“今天赚了，说明我状态好”：短期结果没有信息量，别用几笔交易验证能力。"],
+    actions:["设立熔断规则：单月亏损达 X% 强制停手、只复盘不交易。","把“每日看盘次数 ≤ 3 次”写进规则，用收盘后复盘代替盘中焦虑。"],
+    related:["m0f","m6c","m5b"]},
+  "m5e":{id:"m5e", mod:"m5", icon:"➗", title:"仓位管理的数学",
+    summary:"仓位不是感觉，是公式：仓位 = 可承受亏损金额 ÷ 止损幅度。凯利公式给出理论上限，最大回撤数学告诉你为什么“少亏”优先于“多赚”。",
+    points:["基础公式：仓位 = 总资金 × 单笔风险比例 ÷ 止损幅度。例：100 万、单笔风险 2%（2万）、止损 8% → 仓位 = 2万 ÷ 8% = 25万。","凯利公式：f = 胜率 − 败率 ÷ 盈亏比。凯利值是理论上限，实战建议用 1/4–1/2 凯利，因为你的胜率估计并不精确。","回撤数学：-20% 需 +25% 回本，-50% 需 +100% 回本，-80% 需 +400%——所以“控制回撤”优先于“追求收益”。","连续亏损是必然：即使单笔胜率 60%，连续 5 笔亏损的概率约 1%，仓位必须设计到扛得住连亏。","相关性决定组合风险：看似分散但同涨同跌的持仓，实际仓位等于“加总”。","波动率也决定仓位：高波动标的要用更小仓位，让每笔的风险预算一致。"],
+    myths:["“轻仓没意思，重仓才赚得多”：凯利过重会放大回撤，长期复利反而更差。","“凭感觉定仓位”：感觉无法回答“这笔最多亏多少”的数学问题。"],
+    actions:["用公式算一笔：我的总资金、单笔风险 2%、止损 8% → 应该买多少钱。","回测自己策略的最大连亏次数，反推最差情况下是否超出心理承受。"],
+    related:["m5a","m0d","m4c","m5c"]},
+  /* ---------- 模块6：实操与复盘 ---------- */
+  "m6a":{id:"m6a", mod:"m6", icon:"🎮", title:"模拟盘练习",
+    summary:"先用模拟盘验证理解与策略：熟悉软件、验证逻辑、练习流程。但模拟盘有“心理失真”——亏的不是真钱，不会触发真实情绪，止损纪律必须在实盘小资金里练。",
+    points:["模拟盘三大用途：熟悉工具、验证策略逻辑、练习完整流程（选股→下单→复盘）。","平台示例：东方财富/同花顺模拟盘、雪球组合、券商自带模拟、聚宽/米筐（可回测）。","给模拟盘设定和实盘一样的规则：起始资金、风格、单只上限、止损规则。","至少跑一个完整周期（如一个季度），统计胜率、盈亏比、回撤，再决定是否进入实盘。","模拟盘最大的局限：亏损不痛 → 学不到真实心态；所以它不能替代小资金实盘。","把模拟盘当“实验记录”，所有决策写理由，方便日后对照实盘行为。"],
+    myths:["“模拟盘赚钱=实盘也能赚”：模拟没有滑点与情绪，结果通常偏乐观。","“模拟没用，直接实盘”：没有流程熟练度就实盘，等于交学费给市场。"],
+    actions:["今天开一个模拟盘，写下起始资金与规则，承诺跑满 3 个月。","每月末复盘模拟盘：胜率、回撤、违反规则几次。"],
+    related:["m6b","m4c","m4a"]},
+  "m6b":{id:"m6b", mod:"m6", icon:"💵", title:"小资金实盘",
+    summary:"用亏得起的钱开始：首笔金额即使全部亏光也不影响生活。目标不是赚钱，而是验证模拟盘结论在真实环境（滑点、情绪、成本）下是否成立。",
+    points:["金额选择：即使 100% 亏光也不影响生活的钱（如几千元），这是“学费预算”。","实盘目标：把“严格执行规则”当作唯一 KPI，收益率放第二位。","实盘与模拟的真实差异：恐惧与贪婪、真实滑点与手续费、真实流动性。","前 3–6 个月只求稳定执行：连续 X 笔不违反规则，比赚 10% 更有价值。","连续稳定 6–12 个月后，再考虑逐步增加资金；增加资金时也要分批。","小资金亏光不可怕，可怕的是“用输不起的钱”或“亏光后借钱翻本”。"],
+    myths:["“几千块没意思，赚不到钱”：实盘阶段买的不是收益，是经验。","“实盘赚了=我有能力”：样本太小，先跑满一年再说。"],
+    actions:["写下一个实盘目标：不是收益数字，而是“连续 20 笔交易严格执行规则”。","规定自己：前 3 个月不加钱、不借钱、不加杠杆。"],
+    related:["m6a","m5d","m4b"]},
+  "m6c":{id:"m6c", mod:"m6", icon:"🔍", title:"复盘方法",
+    summary:"复盘是能力增长最快的方式：记录 → 归类 → 找重复错误 → 改规则。复盘的核心是评估“决策质量”，而不是“盈亏结果”。",
+    points:["交易日志字段：日期、标的、买卖理由、价格、仓位、结果、情绪（恐惧/贪婪/平静）、自评打分。","区分决策质量与结果：好决策可能亏钱，坏决策可能赚钱——复盘必须看决策，否则会被随机结果带偏。","找重复错误：本月追高几次？止损犹豫几次？违反规则几次？同一错误出现 3 次就该改规则。","周/月统计：胜率、盈亏比、最大回撤、与规则的偏差率。","把复盘结论变成规则修订：复盘不改规则，就只是写日记。","亏损复盘重“流程”，盈利复盘重“运气成分”——不要只复盘亏损。"],
+    myths:["“只复盘亏钱的单子”：赚钱的单子往往藏着坏习惯（重仓、没止损）。","“记得住，不用写”：记忆会被情绪扭曲，白纸黑字才有数据。"],
+    actions:["建一个表格（Excel/Notion/纸质），从今天起每笔交易都记录。","每周日 20 分钟复盘：统计偏差，找出本周重复出现的错误。"],
+    related:["m5d","m4b","m0f","m6d"]},
+  "m6d":{id:"m6d", mod:"m6", icon:"📖", title:"持续学习",
+    summary:"建立长期输入管道：经典书籍、财报、研报、权威数据源；同时学会过滤噪音。学习方式是“输出”：写笔记、讲给别人、写公司研究，比收藏强十倍。",
+    points:["入门书：《漫步华尔街》《聪明的投资者》；进阶：《投资最重要的事》《穷查理宝典》《股市长线法宝》；技术/心理：《股票作手回忆录》《非理性繁荣》。","数据源：巨潮资讯（公告/财报）、交易所官网、东方财富/同花顺（行情）、券商研报、公司年报原文。","警惕噪音：大V荐股、内幕消息、“稳赚”社群、荐股群——新闻是滞后且情绪化的。","输出式学习：写读书笔记、把学到的讲给朋友、每月写一篇公司研究。","每年评估一次：我的主动策略跑赢指数了吗？没有，就考虑回归指数。","把“每周 1 篇研报 + 每月 1 份年报 + 每季 1 本书”设为默认节奏。"],
+    myths:["“看得多=学得会”：输入不转化为输出与规则，就只是娱乐。","“跟大V=捷径”：别人的逻辑你验证不了，跟单就是把自己的钱交给运气。"],
+    actions:["把上面书单中选 1 本，定下读完日期，读完写 500 字笔记。","清退所有荐股群/消息源，只保留权威数据与公开财报。"],
+    related:["m6c","m2d","m4c","m0c"]}
+};
+/* ================= 图谱数据 ================= */
+const PATH = ["m1a","m1b","m1c","m0e","m1d","m0a","m0b","m0c","m0d","m0f","m2a","m2b","m2d","m2c","m2e","m3a","m3b","m3c","m3d","m4a","m4b","m4d","m4c","m5a","m5e","m5c","m5b","m5d","m6a","m6b","m6c","m6d"];
+const TOPICS = PATH.slice();
+const TOTAL = TOPICS.length;
+const modById = Object.fromEntries(MODULES.map(m=>[m.id,m]));
+const nodeById = {};
+const nodes = [];
+MODULES.forEach(m=>{ const n={id:"hub-"+m.id, hub:true, mod:m.id, x:0,y:0,vx:0,vy:0,r:30}; nodeById[n.id]=n; nodes.push(n); });
+TOPICS.forEach(id=>{ const t=NODES[id]; const n={id, hub:false, mod:t.mod, x:0,y:0,vx:0,vy:0,r:17}; nodeById[n.id]=n; nodes.push(n); });
+const links = []; const seenEdges = new Set();
+function addEdge(s,t,k,rest){ const key=[s,t].sort().join("|"); if(seenEdges.has(key)) return; seenEdges.add(key); links.push({s,t,k,rest}); }
+for(let i=0;i<PATH.length-1;i++) addEdge(PATH[i],PATH[i+1],"pre",126);
+TOPICS.forEach(id=>{ (NODES[id].related||[]).forEach(r=>{ if(r!==id && nodeById[r]) addEdge(id,r,"rel",170); }); });
+TOPICS.forEach(id=> addEdge("hub-"+NODES[id].mod, id, "belong", 64));
+
+/* ================= SVG ================= */
+const graphEl = document.getElementById("graph");
+const svgNS = "http://www.w3.org/2000/svg";
+const svg = document.createElementNS(svgNS,"svg");
+const gMain = document.createElementNS(svgNS,"g");
+const gEdges = document.createElementNS(svgNS,"g");
+const gNodes = document.createElementNS(svgNS,"g");
+gMain.appendChild(gEdges); gMain.appendChild(gNodes); svg.appendChild(gMain); graphEl.appendChild(svg);
+const W = ()=>graphEl.clientWidth, H = ()=>graphEl.clientHeight;
+const view = {k:0.9, tx:0, ty:0};
+function applyView(){ gMain.setAttribute("transform",`translate(${view.tx} ${view.ty}) scale(${view.k})`); }
+
+/* init positions on ellipse */
+const N = nodes.length;
+nodes.forEach((n,i)=>{ const a=i/N*Math.PI*2; const rx=Math.min(W()*0.44, 620), ry=Math.min(H()*0.42, 430); n.x=W()/2+Math.cos(a)*rx+(Math.random()-.5)*80; n.y=H()/2+Math.sin(a)*ry+(Math.random()-.5)*80; });
+
+/* create DOM for nodes */
+const nodeEls = {};
+nodes.forEach(n=>{
+  const g = document.createElementNS(svgNS,"g");
+  g.setAttribute("class",`node mod-${n.mod}`);
+  const halo = document.createElementNS(svgNS,"circle"); halo.setAttribute("class","halo"); halo.setAttribute("r", n.r+5);
+  const ball = document.createElementNS(svgNS,"circle"); ball.setAttribute("class","ball");
+  ball.setAttribute("r",n.r); ball.setAttribute("fill",modById[n.mod].color); ball.setAttribute("fill-opacity",n.hub?0.20:0.12); ball.setAttribute("stroke",modById[n.mod].color); ball.setAttribute("stroke-width",n.hub?2.4:1.6);
+  const em = document.createElementNS(svgNS,"text"); em.setAttribute("class","em"); em.setAttribute("text-anchor","middle"); em.setAttribute("dominant-baseline","central"); em.setAttribute("y",1); em.setAttribute("font-size", n.hub?17:12); em.textContent = n.hub ? modById[n.mod].icon : NODES[n.id].icon;
+  const lbl = document.createElementNS(svgNS,"text"); lbl.setAttribute("class","lbl"); lbl.setAttribute("text-anchor","middle"); lbl.setAttribute("x",0); lbl.setAttribute("y", n.r+16); lbl.setAttribute("font-size", n.hub?12.5:11); lbl.setAttribute("font-weight", n.hub?700:400);
+  lbl.textContent = n.hub ? modById[n.mod].name : NODES[n.id].title;
+  const ck = document.createElementNS(svgNS,"text"); ck.setAttribute("class","checkmark"); ck.setAttribute("text-anchor","middle"); ck.setAttribute("dominant-baseline","central"); ck.setAttribute("x",n.r*0.55); ck.setAttribute("y",-n.r*0.55); ck.setAttribute("font-size",12); ck.setAttribute("font-weight",700); ck.setAttribute("fill","#3ecf8e"); ck.textContent="✓";
+  g.appendChild(halo); g.appendChild(ball); g.appendChild(em); g.appendChild(lbl); g.appendChild(ck);
+  g.addEventListener("pointerdown", ev=>onNodeDown(ev,n));
+  gNodes.appendChild(g); nodeEls[n.id]=g;
+});
+const edgeEls = links.map(l=>{
+  const line = document.createElementNS(svgNS,"line");
+  line.setAttribute("class",`edge ${l.k} e-${nodeById[l.s].mod} e-${nodeById[l.t].mod}`);
+  gEdges.appendChild(line);
+  return {line, l};
+});
+
+function render(){
+  nodes.forEach(n=>{ const g=nodeEls[n.id]; g.setAttribute("transform",`translate(${n.x} ${n.y})`); });
+  edgeEls.forEach(({line,l})=>{ const a=nodeById[l.s], b=nodeById[l.t]; line.setAttribute("x1",a.x); line.setAttribute("y1",a.y); line.setAttribute("x2",b.x); line.setAttribute("y2",b.y); });
+}
+
+/* ================= force simulation ================= */
+let alpha = 1, running = false;
+function step(){
+  const damp = 0.82;
+  for(const l of links){
+    const a=nodeById[l.s], b=nodeById[l.t]; let dx=b.x-a.x, dy=b.y-a.y; let d=Math.hypot(dx,dy)||1;
+    const f=(d-l.rest)*0.022*alpha; const fx=dx/d*f, fy=dy/d*f;
+    a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+  }
+  for(let i=0;i<nodes.length;i++){ const a=nodes[i];
+    for(let j=i+1;j<nodes.length;j++){ const b=nodes[j]; let dx=b.x-a.x, dy=b.y-a.y; let d=Math.hypot(dx,dy)||1;
+      const minD=(a.r+b.r)*0.9; if(d<minD) d=minD;
+      let f=Math.min(6400/(d*d), 11)*alpha; f=Math.min(f, 60);
+      const fx=dx/d*f, fy=dy/d*f; a.vx-=fx; a.vy-=fy; b.vx+=fx; b.vy+=fy;
+    }
+  }
+  const cx=W()/2, cy=H()/2;
+  for(const n of nodes){ n.vx+=(cx-n.x)*0.0042*alpha; n.vy+=(cy-n.y)*0.0042*alpha; }
+  for(const n of nodes){ n.vx*=damp; n.vy*=damp; n.x+=n.vx; n.y+=n.vy; }
+  alpha*=0.9945;
+  render();
+  if(alpha>0.02){ running=true; requestAnimationFrame(step); } else running=false;
+}
+function reheat(a){ alpha=Math.max(alpha, a||0.5); if(!running){ running=true; requestAnimationFrame(step); } }
+
+/* ================= interactions ================= */
+let selected = null;
+function onNodeDown(ev,n){
+  ev.stopPropagation();
+  const rect=svg.getBoundingClientRect();
+  const toWorld=(e)=>{ const sx=e.clientX-rect.left, sy=e.clientY-rect.top; return [(sx-view.tx)/view.k,(sy-view.ty)/view.k]; };
+  let moved=false;
+  const mv=e=>{ moved=true; const [wx,wy]=toWorld(e); n.x=wx; n.y=wy; n.vx=0; n.vy=0; reheat(0.25); };
+  const up=e=>{ window.removeEventListener("pointermove",mv); window.removeEventListener("pointerup",up);
+    if(!moved) selectNode(n.id); };
+  window.addEventListener("pointermove",mv); window.addEventListener("pointerup",up);
+}
+svg.addEventListener("wheel", e=>{
+  e.preventDefault();
+  const rect=svg.getBoundingClientRect(); const sx=e.clientX-rect.left, sy=e.clientY-rect.top;
+  const k2=view.k*Math.pow(1.0016,-e.deltaY); view.k=Math.max(0.3,Math.min(3,k2));
+  const wx=(sx-view.tx)/view.k, wy=(sy-view.ty)/view.k;
+  view.tx=sx-wx*view.k; view.ty=sy-wy*view.k; applyView();
+},{passive:false});
+let panning=false, px=0, py=0;
+svg.addEventListener("pointerdown", e=>{
+  if(e.target!==svg) return;
+  panning=true; px=e.clientX; py=e.clientY;
+});
+window.addEventListener("pointermove", e=>{
+  if(!panning) return;
+  view.tx+=e.clientX-px; view.ty+=e.clientY-py; px=e.clientX; py=e.clientY; applyView();
+});
+window.addEventListener("pointerup", ()=>{ if(panning){ panning=false; } });
+svg.addEventListener("dblclick", ()=>{ view.k=0.9; view.tx=0; view.ty=0; applyView(); });
+
+/* selection & highlight */
+function neighbors(id){
+  const set=new Set([id]);
+  links.forEach(l=>{ if(l.s===id) set.add(l.t); if(l.t===id) set.add(l.s); });
+  return set;
+}
+function clearSelection(){ selected=null; svg.classList.remove("lite"); document.querySelectorAll(".node.selected").forEach(n=>n.classList.remove("selected")); hideDetail(); }
+function selectNode(id){
+  selected=id;
+  svg.classList.add("lite");
+  document.querySelectorAll(".node").forEach(g=>g.classList.remove("keep","selected"));
+  const keep=neighbors(id);
+  nodes.forEach(n=>{ if(keep.has(n.id)) nodeEls[n.id].classList.add("keep"); });
+  nodeEls[id].classList.add("selected");
+  edgeEls.forEach(({line,l})=>{ if(keep.has(l.s)&&keep.has(l.t)) line.classList.add("keep"); });
+  renderDetail(id);
+  updatePathActive(id);
+}
+svg.addEventListener("pointerdown", ()=>{ if(!panning){} });
+svg.addEventListener("click", e=>{ if(e.target===svg){ clearSelection(); } });
+
+/* ================= progress ================= */
+let learned = new Set();
+try{ const raw=localStorage.getItem("ghnav-progress-v1"); if(raw) learned=new Set(JSON.parse(raw)); }catch(err){}
+function saveProgress(){ try{ localStorage.setItem("ghnav-progress-v1", JSON.stringify([...learned])); }catch(err){} }
+function toggleLearned(id){
+  if(learned.has(id)) learned.delete(id); else learned.add(id);
+  saveProgress(); refreshProgress(); renderDetail(selected);
+}
+function refreshProgress(){
+  const n=TOPICS.filter(id=>learned.has(id)).length;
+  document.getElementById("pct").textContent = Math.round(n/TOTAL*100)+"%";
+  document.getElementById("doneNum").textContent = `(${n}/${TOTAL})`;
+  document.getElementById("pathDone").textContent = `${n}/${TOTAL}`;
+  document.getElementById("pbar").style.width = (n/TOTAL*100)+"%";
+  nodes.forEach(nd=>{ nodeEls[nd.id].classList.toggle("done", !nd.hub && learned.has(nd.id)); });
+  document.querySelectorAll(".pitem").forEach(el=>{ el.classList.toggle("done", learned.has(el.dataset.id)); });
+  const cont=document.getElementById("contBtn");
+  const next=TOPICS.find(id=>!learned.has(id));
+  cont.textContent = next ? "▶ 继续学习："+NODES[next].title : "🎉 全部学完，进入循环复盘";
+}
+document.getElementById("resetBtn").addEventListener("click", ()=>{ if(confirm("确定清空全部学习进度？")){ learned=new Set(); saveProgress(); refreshProgress(); } });
+
+/* ================= path list ================= */
+const pathList = document.getElementById("pathList");
+MODULES.forEach(m=>{
+  const items = TOPICS.filter(id=>NODES[id].mod===m.id);
+  const det=document.createElement("details"); det.className="pmod"; det.open=true;
+  const sum=document.createElement("summary");
+  const dot=document.createElement("span"); dot.className="dot"; dot.style.background=m.color;
+  const name=document.createElement("span"); name.textContent=m.name;
+  const cnt=document.createElement("span"); cnt.className="cnt"; cnt.id="cnt-"+m.id;
+  sum.append(dot,name,cnt);
+  const wrap=document.createElement("div"); wrap.className="items";
+  items.forEach(id=>{
+    const it=document.createElement("div"); it.className="pitem"; it.dataset.id=id;
+    const idx=document.createElement("span"); idx.className="idx"; idx.textContent=(PATH.indexOf(id)+1);
+    const ck=document.createElement("span"); ck.className="ck"; ck.textContent="✓";
+    const t=document.createElement("span"); t.className="t"; t.textContent=NODES[id].title;
+    it.append(idx,ck,t);
+    it.addEventListener("click", ()=>selectNode(id));
+    wrap.appendChild(it);
+  });
+  det.append(sum,wrap); pathList.appendChild(det);
+});
+function updatePathActive(id){
+  document.querySelectorAll(".pitem.active").forEach(el=>el.classList.remove("active"));
+  const el=document.querySelector(`.pitem[data-id="${id}"]`); if(el){ el.classList.add("active"); el.scrollIntoView({block:"nearest"}); }
+}
+document.getElementById("contBtn").addEventListener("click", ()=>{
+  const next=TOPICS.find(id=>!learned.has(id)) || TOPICS[0];
+  selectNode(next);
+});
+
+/* ================= legend ================= */
+const legend=document.getElementById("legend");
+MODULES.forEach(m=>{
+  const lg=document.createElement("span"); lg.className="lg";
+  const dot=document.createElement("span"); dot.className="dot"; dot.style.background=m.color;
+  const t=document.createElement("span"); t.className="lgt"; t.textContent=m.name;
+  lg.append(dot,t);
+  lg.addEventListener("click", ()=>{
+    lg.classList.toggle("off");
+    svg.classList.toggle("hide-"+m.id, lg.classList.contains("off"));
+  });
+  legend.appendChild(lg);
+});
+const elg=document.createElement("span"); elg.className="edgelegend";
+elg.innerHTML=`<span><i></i>先修顺序</span><span><i class="dashed"></i>关联延伸</span>`;
+legend.appendChild(elg);
+
+/* ================= search ================= */
+const searchInput=document.getElementById("search");
+const emptyState=document.getElementById("emptyState");
+function doSearch(q){
+  svg.classList.remove("lite");
+  document.querySelectorAll(".node,.edge").forEach(el=>el.classList.remove("keep"));
+  if(!q){ emptyState.style.display="none"; return; }
+  const ql=q.toLowerCase();
+  const hits=TOPICS.filter(id=>{
+    const nd=NODES[id]; const hay=[nd.title,nd.summary,...nd.points,...nd.myths,...nd.actions].join(" ").toLowerCase();
+    return hay.includes(ql);
+  });
+  emptyState.style.display = hits.length? "none":"flex";
+  if(hits.length){ svg.classList.add("lite"); hits.forEach(id=>nodeEls[id].classList.add("keep")); }
+}
+searchInput.addEventListener("input", ()=>doSearch(searchInput.value.trim()));
+searchInput.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    const q=searchInput.value.trim(); if(!q) return;
+    const ql=q.toLowerCase();
+    let hit=TOPICS.find(id=> NODES[id].title.toLowerCase().includes(ql));
+    if(!hit) hit=TOPICS.find(id=> [NODES[id].summary,...NODES[id].points].join(" ").toLowerCase().includes(ql));
+    if(hit){ selectNode(hit); searchInput.blur(); }
+  }
+});
+
+/* ================= detail panel ================= */
+const right=document.getElementById("right");
+function hideDetail(){ right.classList.add("empty"); right.innerHTML=`<div>👈 点击左侧路径或中间图谱中的任意节点，查看详细知识点</div>`; }
+function chipFor(id){
+  const nd=NODES[id]; const c=document.createElement("span"); c.className="chip";
+  const cd=document.createElement("span"); cd.className="cd"; cd.style.background=modById[nd.mod].color;
+  c.append(cd, document.createTextNode(nd.title));
+  c.addEventListener("click", ()=>selectNode(id));
+  return c;
+}
+function renderDetail(id){
+  right.classList.remove("empty"); right.innerHTML="";
+  if(id.startsWith("hub-")){
+    const m=modById[id.slice(4)];
+    const box=document.createElement("div"); box.className="dmod";
+    const dh=document.createElement("div"); dh.className="dh";
+    const big=document.createElement("div"); big.className="big"; big.style.background=m.color+"22"; big.style.border="1px solid "+m.color+"55"; big.textContent=m.icon;
+    const t=document.createElement("div");
+    const h2=document.createElement("h2"); h2.textContent="模块："+m.name;
+    const sm=document.createElement("small"); sm.textContent="第 "+((MODULES.findIndex(x=>x.id===m.id)+1))+"/"+MODULES.length+" 个模块 · 共 "+TOPICS.filter(x=>NODES[x].mod===m.id).length+" 个知识点";
+    t.append(h2,sm); dh.append(big,t); box.appendChild(dh);
+    const p=document.createElement("p"); p.style.fontSize="13px"; p.style.lineHeight="1.7"; p.style.color="#d6deee"; p.textContent=m.summary;
+    box.appendChild(p);
+    const s2=document.createElement("div"); s2.className="dsec"; s2.textContent="本模块学习目标"; box.appendChild(s2);
+    const ul=document.createElement("ul"); ul.className="dlist do";
+    m.goals.forEach(g=>{ const li=document.createElement("li"); li.textContent=g; ul.appendChild(li); });
+    box.appendChild(ul);
+    const s3=document.createElement("div"); s3.className="dsec"; s3.textContent="知识点（按推荐顺序）"; box.appendChild(s3);
+    const members=TOPICS.filter(x=>NODES[x].mod===m.id);
+    members.forEach((id,ix)=>{
+      const mb=document.createElement("div"); mb.className="member";
+      const no=document.createElement("span"); no.className="no"; no.textContent=(PATH.indexOf(id)+1);
+      const t2=document.createElement("span"); t2.style.flex="1"; t2.textContent=NODES[id].title;
+      mb.append(no,t2);
+      mb.addEventListener("click", ()=>selectNode(id));
+      box.appendChild(mb);
+    });
+    const nav=document.createElement("div"); nav.className="dnav";
+    const go=document.createElement("button"); go.className="primary"; go.textContent="开始学习本模块 →";
+    go.addEventListener("click", ()=>selectNode(members[0]));
+    nav.appendChild(go); box.appendChild(nav);
+    right.appendChild(box); return;
+  }
+  const nd=NODES[id]; const m=modById[nd.mod];
+  const tag=document.createElement("div"); tag.className="dtag"; tag.style.borderColor=m.color+"44";
+  tag.innerHTML=`<span style="width:8px;height:8px;border-radius:2px;background:${m.color};display:inline-block"></span>${m.name} · 第 ${PATH.indexOf(id)+1}/${TOTAL} 步`;
+  right.appendChild(tag);
+  const h=document.createElement("div"); h.className="dtitle"; h.textContent=nd.icon+" "+nd.title; right.appendChild(h);
+  const sub=document.createElement("div"); sub.className="dsub"; sub.textContent=nd.summary; right.appendChild(sub);
+  const s1=document.createElement("div"); s1.className="dsec"; s1.textContent="核心要点"; right.appendChild(s1);
+  const ul1=document.createElement("ul"); ul1.className="dlist"; nd.points.forEach(p=>{ const li=document.createElement("li"); li.textContent=p; ul1.appendChild(li); }); right.appendChild(ul1);
+  if(nd.myths&&nd.myths.length){
+    const s2=document.createElement("div"); s2.className="dsec"; s2.textContent="⚠ 常见误区"; right.appendChild(s2);
+    const ul2=document.createElement("ul"); ul2.className="dlist warn"; nd.myths.forEach(p=>{ const li=document.createElement("li"); li.textContent=p; ul2.appendChild(li); }); right.appendChild(ul2);
+  }
+  const s3=document.createElement("div"); s3.className="dsec"; s3.textContent="✅ 动手做"; right.appendChild(s3);
+  const ul3=document.createElement("ul"); ul3.className="dlist do"; nd.actions.forEach(p=>{ const li=document.createElement("li"); li.textContent=p; ul3.appendChild(li); }); right.appendChild(ul3);
+  if(nd.related&&nd.related.length){
+    const s4=document.createElement("div"); s4.className="dsec"; s4.textContent="🔗 关联与延伸"; right.appendChild(s4);
+    const lk=document.createElement("div"); lk.className="links";
+    nd.related.forEach(r=>{ if(NODES[r]) lk.appendChild(chipFor(r)); });
+    right.appendChild(lk);
+  }
+  const nav=document.createElement("div"); nav.className="dnav";
+  const prev=document.createElement("button"); prev.textContent="← 上一步";
+  const learnedBtn=document.createElement("button"); learnedBtn.className="primary"; learnedBtn.textContent = learned.has(id)? "✓ 已掌握（点击取消）":"标记为已掌握";
+  const next=document.createElement("button"); next.textContent="下一步 →";
+  const pi=PATH.indexOf(id);
+  prev.disabled = pi<=0; next.disabled = pi>=TOTAL-1;
+  prev.addEventListener("click", ()=>{ if(pi>0) selectNode(PATH[pi-1]); });
+  next.addEventListener("click", ()=>{ if(pi<TOTAL-1) selectNode(PATH[pi+1]); });
+  learnedBtn.addEventListener("click", ()=>toggleLearned(id));
+  nav.append(prev, learnedBtn, next); right.appendChild(nav);
+}
+
+/* keyboard */
+document.addEventListener("keydown", e=>{
+  if(e.target===searchInput) return;
+  if(!selected || selected.startsWith("hub-")) return;
+  const pi=PATH.indexOf(selected);
+  if(e.key==="ArrowRight" && pi<TOTAL-1) selectNode(PATH[pi+1]);
+  else if(e.key==="ArrowLeft" && pi>0) selectNode(PATH[pi-1]);
+  else if(e.key==="Escape") clearSelection();
+});
+
+/* ================= init ================= */
+applyView();
+render();
+document.getElementById("doneNum").textContent=`(${0}/${TOTAL})`;
+refreshProgress();
+reheat(1);
+</script>
+</body>
+</html>
