@@ -185,7 +185,7 @@ details.deep .deepbody .hl{color:#ffd479;}
   </div>
   <div class="searchwrap"><span class="si">🔍</span><input id="search" type="text" placeholder="搜索知识点，如：市盈率 / 止损 / MACD" autocomplete="off"></div>
   <div class="hstats">
-    <span>进度 <b id="pct" style="color:var(--text)">0%</b> <span id="doneNum">(0/33)</span></span>
+    <span>进度 <b id="pct" style="color:var(--text)">0%</b> <span id="doneNum">(0/44)</span></span>
     <div class="progressbar"><i id="pbar"></i></div>
     <button class="hbtn" id="resetBtn">重置进度</button>
   </div>
@@ -296,7 +296,7 @@ const NODES = {
     myths:["“胜率高=能赚钱”：忽略了赔率与成本。","“亏一点没事，涨回来就好”：没有止损纪律，小亏会滚成大亏。"],
     actions:["每笔交易前写下：预期胜率、止盈位、止损位，套入公式算期望。","如果算不出正期望，这笔交易就不该做。"],
     quiz:{q:"一笔交易期望为正的充要条件是？",opts:["胜率高于 50%","胜率×平均盈利 > 败率×平均亏损 + 成本","赔率必须大于 2","从不亏损"],ans:1,why:"期望 = 胜率×平均盈利 − 败率×平均亏损 − 成本，为正才值得下注。胜率高但赔率差，期望照样为负。"},
-    related:["m4c","m5b","m5a","m5e","m0g"]},
+    related:["m4c","m5b","m5a","m5e","m0g","m0h"]},
   "m0e":{id:"m0e", mod:"m0", icon:"🧾", title:"交易成本",
     summary:"每次交易都有成本：佣金、印花税、滑点、买卖价差。高频交易在扣成本后是负和游戏——成本是散户最确定、最常被忽略的“敌人”。",
     deep:"成本有四层：佣金（约万 2.5 起、最低 5 元）、印花税（A股卖出时 0.05%）、滑点（市价单的实际成交价差）、买卖价差。A股单边合计约 0.1%–0.2%。把频率乘上去，一年 100 次交易 = 成本 10%–20%+，绝大多数策略的毛利都喂给了市场。这就是“少交易、长持有”不只是性格偏好、而是数学结论的原因。",
@@ -314,7 +314,7 @@ const NODES = {
     myths:["“我能控制情绪”——研究反复证明，偏差在压力下会自动出现，与智商无关。","“这次不一样”——每一次泡沫里的经典台词。"],
     actions:["建立交易日志，每次记录当时的情绪状态，复盘时对照这份清单。","给自己设一条熔断规则：单月亏损 X% 强制停手一周。"],
     quiz:{q:"“处置效应”指的是？",opts:["越涨越买、追高","过早卖出盈利股、死扛亏损股","频繁换股","抄底越跌越买"],ans:1,why:"处置效应 = 拿不住盈利（落袋为安心理）却死守亏损（损失厌恶）。这两种偏差组合，长期把好仓位换成坏仓位。"},
-    related:["m5d","m6c","m0d"]},
+    related:["m5d","m6c","m0d","m0h"]},
   "m0g":{id:"m0g", mod:"m0", icon:"⏳", title:"复利与时间",
     summary:"复利常被称为“世界第八大奇迹”：时间越长，复利效应越惊人；反过来，一次大亏损对复利的破坏也越致命。这是理解长期投资的第一性原理。",
     deep:"复利是指数增长，而人的直觉是线性的。收益端：长期持有、少折腾、让盈利再投资，每一块钱工作的时间越长，滚得越大。损失端：一次 -50% 需要 +100% 回本，一次大亏能抹掉多年积累。散户常犯的错是把复利当口号，行为却不断打断它：赚了就跑、亏了死扛、频繁交易交手续费。真正的复利，靠的是“可持续的正期望 + 不中断”。",
@@ -323,7 +323,16 @@ const NODES = {
     myths:["“复利就是存钱”：复利的前提是可持续的正收益，赌一把归零就全没了。","“趁年轻梭哈一把，赢了再慢慢复利”：本金归零后，复利从零开始。"],
     actions:["用 72 法则算：按你预期的年化收益，多少年翻倍。","把“永不归零（单笔风险上限）”写进你的第一原则。"],
     quiz:{q:"72 法则：年化收益 8%，本金约多少年翻倍？",opts:["6 年","9 年","12 年","18 年"],ans:1,why:"72 ÷ 8 = 9，约 9 年翻倍。72 法则是粗略估算复利翻倍时间的速算法。"},
-    related:["m0d","m0c","m5e","m7e"]},
+    related:["m0d","m0c","m5e","m7f","m0h"]},
+  "m0h":{id:"m0h", mod:"m0", icon:"🏰", title:"案例：门口的野蛮人——杠杆收购",
+    summary:"1988 年 KKR 以约 250 亿美元收购 RJR Nabisco——史上最著名的杠杆收购（LBO），被写成《门口的野蛮人》。它是一堂浓缩的金融课：杠杆、现金流、估值、贪婪与“赢者的诅咒”全在里面。",
+    deep:"故事：RJR 的 CEO 约翰逊想用公司的钱低价把自己买下来（MBO 占便宜）→ 消息走漏引发公开竞价 → KKR 以每股 109 美元、总价约 250 亿美元险胜（只比对手高 1 美元）→ 为还债疯狂卖资产 → 1990 年垃圾债券市场崩盘，KKR 被巨额债务拖累，回报远低于预期。续集：2007 年 KKR+TPG+高盛以约 450 亿美元收购德州电力 TXU（史上最大 LBO），押注天然气价格，2014 年破产。两案合起来是最好的“杠杆风险”教材。",
+    example:"算例：买一家公司 100 亿，自己出 20 亿、借 80 亿；3 年后卖 120 亿并用现金流还掉 30 亿债 → 股权 = 120−50 = 70 亿，投入 20 亿 = 3.5 倍。若全用自有资金买，只有 1.2 倍——杠杆放大收益。反面：若只卖 60 亿且债务还剩 70 亿 → 资不抵债，股权归零。上行放大、下行毁灭，且不对称。",
+    points:["LBO = 借别人的钱买公司，用公司自己的现金流还债；收购方只出 10%–40% 的股权。","RJR 1988：CEO 想低价 MBO 占便宜 → 公开竞价 → KKR 每股 109 美元、总价约 250 亿美元险胜。","KKR 赢下拍卖却回报平平：出价过高（赢者的诅咒）+ 债务压顶 + 1990 年垃圾债市场崩盘。","TXU 2007：约 450 亿美元押注天然气价格 → 气价暴跌 → 2014 年破产，史上最大 LBO 以最大破产收场。","杠杆不创造价值，只放大结果：放大的是“经营改善”和“假设正确”，也放大“出价过高”和“假设错误”。","对散户的启示：现金流质量 > 账面利润；绝不借钱/配资炒股；警惕贪婪与过度自信。"],
+    myths:["“杠杆收购=空手套白狼稳赚”：杠杆不创造价值，假设错了就归零（TXU 即证）。","“故事里赢家赚最多”：KKR 赢了拍卖，回报却远低于预期——赢者的诅咒。"],
+    actions:["用两句话写：这个案例如何印证“亏损不对称”与“行为金融学”。","检查自己：是否在使用任何形式的杠杆（融资、配资、借钱炒股）？有就立刻停。"],
+    quiz:{q:"KKR 收购 RJR 后回报远低于预期，最核心的原因是？",opts:["公司经营太好没机会改善","竞标抬到 109 美元（出价过高）+ 巨额债务 + 1990 信用崩盘","管理层太优秀","没有出售任何资产"],ans:1,why:"竞价战把价格抬到虚高，赢者承担“赢者的诅咒”；叠加巨额债务利息与 1990 年垃圾债市场冻结，杠杆从武器变成绞索。"},
+    related:["m0d","m0f","m0g","m5e","m0a","m5b"]},
   /* ---------- 模块1：基础认知 ---------- */
   "m1a":{id:"m1a", mod:"m1", icon:"📜", title:"股票的本质",
     summary:"股票代表公司所有权的一部分。你买的不是一串代码，而是一笔未来现金流的索取权：公司赚钱你分享（分红与成长），公司亏钱你承担。",
@@ -501,7 +510,7 @@ const NODES = {
     myths:["“轻仓没意思，重仓才赚得多”：凯利过重会放大回撤，长期复利反而更差。","“凭感觉定仓位”：感觉无法回答“这笔最多亏多少”的数学问题。"],
     actions:["用公式算一笔：我的总资金、单笔风险 2%、止损 8% → 应该买多少钱。","回测自己策略的最大连亏次数，反推最差情况下是否超出心理承受。"],
     quiz:{q:"100 万本金、单笔风险预算 2%、止损幅度 8%，这笔应买多少？",opts:["25 万","8 万","2 万","100 万"],ans:0,why:"仓位 = 可承受亏损金额 ÷ 止损幅度 = (100万×2%) ÷ 8% = 25 万。先定风险预算，再反推仓位，而不是先想买多少。"},
-    related:["m5a","m0d","m4c","m5c"]},
+    related:["m5a","m0d","m4c","m5c","m0h"]},
   "m5c":{id:"m5c", mod:"m5", icon:"🌿", title:"分散与集中",
     summary:"分散降低单一个股风险，但过度分散稀释收益。关键不是数量，而是相关性：10 只同行业股票 ≈ 1 只。跨行业、跨资产才叫真分散。",
     deep:"分散的本质是“相关性”，不是数量。10 只同行业股票 ≈ 1 只；跨行业、跨风格（成长/价值）、跨资产（股/债/现金）、跨市场（A股/美股）才是真分散。适度集中（研究最深的 3–5 只）能提升收益，但前提是研究深度配得上仓位。新手先靠指数/多行业分散站稳，能力提升后再谈集中。分散的真义：任何单一坏消息都不能让你伤筋动骨。",
@@ -661,7 +670,7 @@ const NODES = {
     related:["m7c","m7d","m7f","m5f","m6e"]}
 };
 /* ================= 图谱数据 ================= */
-const PATH = ["m1a","m1b","m1c","m0e","m1d","m0a","m0b","m0c","m0d","m0f","m0g","m2a","m2b","m2d","m2c","m2e","m3a","m3b","m3c","m3d","m4a","m4b","m4d","m4c","m5a","m5e","m5c","m5f","m5b","m5d","m6a","m6b","m6c","m6d","m6e","m7a","m7b","m7c","m7d","m7e","m7f","m7g","m7h"];
+const PATH = ["m1a","m1b","m1c","m0e","m1d","m0a","m0b","m0c","m0d","m0f","m0g","m0h","m2a","m2b","m2d","m2c","m2e","m3a","m3b","m3c","m3d","m4a","m4b","m4d","m4c","m5a","m5e","m5c","m5f","m5b","m5d","m6a","m6b","m6c","m6d","m6e","m7a","m7b","m7c","m7d","m7e","m7f","m7g","m7h"];
 const TOPICS = PATH.slice();
 const TOTAL = TOPICS.length;
 const modById = Object.fromEntries(MODULES.map(m=>[m.id,m]));
@@ -686,6 +695,16 @@ gMain.appendChild(gEdges); gMain.appendChild(gNodes); svg.appendChild(gMain); gr
 const W = ()=>graphEl.clientWidth, H = ()=>graphEl.clientHeight;
 const view = {k:0.9, tx:0, ty:0};
 function applyView(){ gMain.setAttribute("transform",`translate(${view.tx} ${view.ty}) scale(${view.k})`); }
+function fitView(){
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  nodes.forEach(n=>{ minX=Math.min(minX,n.x-n.r-20); maxX=Math.max(maxX,n.x+n.r+20); minY=Math.min(minY,n.y-n.r-24); maxY=Math.max(maxY,n.y+n.r+8); });
+  const bw=Math.max(maxX-minX,1), bh=Math.max(maxY-minY,1);
+  view.k=Math.min((W()-90)/bw,(H()-90)/bh,1.5);
+  view.k=Math.max(view.k,0.32);
+  view.tx=(W()-bw*view.k)/2 - minX*view.k;
+  view.ty=(H()-bh*view.k)/2 - minY*view.k;
+  applyView();
+}
 
 const N = nodes.length;
 nodes.forEach((n,i)=>{ const a=i/N*Math.PI*2; const rx=Math.min(W()*0.44, 620), ry=Math.min(H()*0.42, 430); n.x=W()/2+Math.cos(a)*rx+(Math.random()-.5)*80; n.y=H()/2+Math.sin(a)*ry+(Math.random()-.5)*80; });
@@ -719,7 +738,7 @@ function render(){
 
 /* ================= force simulation ================= */
 let alpha = 1, running = false;
-function step(){
+function physics(){
   const damp = 0.82;
   for(const l of links){
     const a=nodeById[l.s], b=nodeById[l.t]; let dx=b.x-a.x, dy=b.y-a.y; let d=Math.hypot(dx,dy)||1;
@@ -736,11 +755,14 @@ function step(){
   const cx=W()/2, cy=H()/2;
   for(const n of nodes){ n.vx+=(cx-n.x)*0.0042*alpha; n.vy+=(cy-n.y)*0.0042*alpha; }
   for(const n of nodes){ n.vx*=damp; n.vy*=damp; n.x+=n.vx; n.y+=n.vy; }
-  alpha*=0.9945;
+}
+function step(){
+  physics();
+  alpha*=0.95;
   render();
   if(alpha>0.02){ running=true; requestAnimationFrame(step); } else running=false;
 }
-function reheat(a){ alpha=Math.max(alpha, a||0.5); if(!running){ running=true; requestAnimationFrame(step); } }
+function reheat(a){ alpha=Math.max(alpha, a||0.4); if(!running){ running=true; requestAnimationFrame(step); } }
 
 /* ================= interactions ================= */
 let selected = null;
@@ -1001,11 +1023,17 @@ document.addEventListener("keydown", e=>{
 });
 
 /* ================= init ================= */
-applyView();
+alpha = 1;
+for(let k=0;k<520;k++) physics();   // 同步预收敛：首帧即接近最终布局
+alpha = 0.5;
 render();
+fitView();
 document.getElementById("doneNum").textContent=`(${0}/${TOTAL})`;
 refreshProgress();
-reheat(1);
+running = false;
+requestAnimationFrame(step);        // 1 秒内轻微收敛收尾
+let _rt;
+window.addEventListener("resize", ()=>{ clearTimeout(_rt); _rt=setTimeout(()=>{ fitView(); }, 200); });
 </script>
 </body>
 </html>
