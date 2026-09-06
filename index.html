@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
@@ -44,9 +44,9 @@ header{
 .hbtn:hover{color:var(--text); border-color:rgba(255,255,255,.25);}
 /* ---------- layout ---------- */
 #app{position:fixed; top:56px; left:0; right:0; bottom:0; display:flex;}
-#left{width:262px; min-width:262px; border-right:1px solid var(--line); overflow-y:auto; padding:14px 12px 40px; background:rgba(12,17,34,.6);}
+#left{width:270px; min-width:270px; border-right:2px solid var(--line); overflow-y:auto; padding:14px 12px 40px; background:rgba(12,17,34,.6);}
 #center{flex:1; position:relative; min-width:0;}
-#right{width:368px; min-width:368px; border-left:1px solid var(--line); overflow-y:auto; padding:16px; background:rgba(12,17,34,.6);}
+#right{width:430px; min-width:430px; border-left:2px solid var(--line); overflow-y:auto; padding:18px 22px 40px; background:rgba(12,17,34,.6);}
 #right.empty{display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:13px; text-align:center;}
 /* ---------- left: path ---------- */
 .pathhead{font-size:12px; color:var(--dim); letter-spacing:1px; margin:4px 4px 10px; display:flex; justify-content:space-between; align-items:center;}
@@ -175,6 +175,54 @@ details.deep .deepbody .hl{color:#ffd479;}
 .quizwhy{margin-top:8px; font-size:12.2px; color:#ffd479; line-height:1.65; display:none;}
 .quizwhy.show{display:block;}
 #graph svg.hide-m7 .mod-m7,#graph svg.hide-m7 .e-m7{opacity:.05;}
+
+/* ========== 亮色主题（默认 · 暖黄） ========== */
+html[data-theme="light"]{
+  --bg:#f6f1e2; --text:#323a48; --muted:#5c6878; --dim:#98a1b0;
+  --accent:#2f6bd8; --ok:#1f9d62; --line:rgba(120,104,64,.24);
+}
+html[data-theme="light"] body{ background:radial-gradient(1200px 800px at 70% -10%, #fdeec6 0%, #f6f1e2 60%) #f6f1e2; color:#323a48; }
+html[data-theme="light"] header{ background:rgba(255,251,240,.9); }
+html[data-theme="light"] .searchwrap input{ background:rgba(255,255,255,.85); color:#323a48; border-color:rgba(120,104,64,.3); }
+html[data-theme="light"] .searchwrap input:focus{ background:#fff; }
+html[data-theme="light"] #left, html[data-theme="light"] #right{ background:rgba(255,252,243,.75); }
+html[data-theme="light"] .progressbar{ background:rgba(0,0,0,.12); }
+html[data-theme="light"] .hbtn{ color:#5c6878; }
+html[data-theme="light"] .hbtn:hover{ color:#323a48; border-color:rgba(120,104,64,.4); }
+html[data-theme="light"] .pmod{ background:rgba(255,255,255,.7); }
+html[data-theme="light"] .pitem:hover{ background:rgba(60,70,100,.08); color:#323a48; }
+html[data-theme="light"] .pitem.active{ background:rgba(47,107,216,.16); }
+html[data-theme="light"] .pitem .ck{ border-color:rgba(60,70,100,.4); }
+html[data-theme="light"] .node text.lbl{ fill:#4a5670; }
+html[data-theme="light"] .edge{ stroke:rgba(70,90,130,.45); }
+html[data-theme="light"] .edge.rel{ stroke:rgba(70,90,130,.28); }
+html[data-theme="light"] .edge.belong{ stroke:rgba(70,90,130,.14); }
+html[data-theme="light"] .legend, html[data-theme="light"] .hint{ background:rgba(255,253,246,.94); }
+html[data-theme="light"] .legend .lgt{ color:#5c6878; }
+html[data-theme="light"] .edgelegend i{ border-top-color:rgba(70,90,130,.5); }
+html[data-theme="light"] .edgelegend i.dashed{ border-top-color:rgba(70,90,130,.3); }
+html[data-theme="light"] .dlist li{ color:#3d4757; }
+html[data-theme="light"] details.deep{ background:rgba(47,107,216,.07); border-color:rgba(47,107,216,.28); }
+html[data-theme="light"] details.deep summary{ color:#1d4fae; }
+html[data-theme="light"] details.deep .deepbody{ color:#3d4757; }
+html[data-theme="light"] details.deep .deepbody .hl{ color:#a16207; }
+html[data-theme="light"] .example{ background:rgba(31,157,98,.07); border-left-color:#1f9d62; color:#2c5a45; }
+html[data-theme="light"] .example b{ color:#0e7a49; }
+html[data-theme="light"] .quizbox{ background:rgba(255,255,255,.65); }
+html[data-theme="light"] .quizopt{ background:#fff; color:#3d4757; }
+html[data-theme="light"] .quizopt:hover:not(:disabled){ background:#eef3ff; }
+html[data-theme="light"] .quizopt.correct{ color:#0e7a49; background:rgba(31,157,98,.15); }
+html[data-theme="light"] .quizopt.wrong{ color:#b33636; background:rgba(220,80,80,.13); }
+html[data-theme="light"] .quizwhy{ color:#8a6d1a; }
+html[data-theme="light"] .chip{ background:rgba(255,255,255,.8); color:#3d4757; }
+html[data-theme="light"] .chip:hover{ color:#1d4fae; }
+html[data-theme="light"] .dnav button{ background:rgba(255,255,255,.75); }
+html[data-theme="light"] .member:hover{ background:rgba(60,70,100,.07); }
+html[data-theme="light"] ::-webkit-scrollbar-thumb{ background:rgba(60,70,100,.3); }
+html[data-theme="light"] .brand .logo{ background:linear-gradient(135deg,#f5d77a,#eda93c); }
+html[data-theme="light"] .empty-state{ color:#98a1b0; }
+html[data-theme="light"] .node .ball{ stroke-width:1.8; }
+body, header, #left, #right, .pmod, .chip, .quizopt, .hbtn{ transition:background .3s, color .3s, border-color .3s; }
 </style>
 </head>
 <body>
@@ -185,8 +233,9 @@ details.deep .deepbody .hl{color:#ffd479;}
   </div>
   <div class="searchwrap"><span class="si">🔍</span><input id="search" type="text" placeholder="搜索知识点，如：市盈率 / 止损 / MACD" autocomplete="off"></div>
   <div class="hstats">
-    <span>进度 <b id="pct" style="color:var(--text)">0%</b> <span id="doneNum">(0/44)</span></span>
+    <span>进度 <b id="pct" style="color:var(--text)">0%</b> <span id="doneNum">(0/47)</span></span>
     <div class="progressbar"><i id="pbar"></i></div>
+    <button class="hbtn" id="themeBtn">☀️ 亮色</button>
     <button class="hbtn" id="resetBtn">重置进度</button>
   </div>
 </header>
@@ -212,7 +261,7 @@ details.deep .deepbody .hl{color:#ffd479;}
 const MODULES = [
   {id:"m0", name:"认知基石", icon:"🧭", color:"#f5b13d",
    summary:"这是对抗性审查后新增的第一性原理模块：先弄清股市的钱从哪来、为什么多数人会亏钱，建立“正期望 + 低成本 + 强纪律”的底层框架，再学具体工具。",
-   goals:["理解回报的三个来源，分清你赚的是哪种钱","承认市场有效性的存在，找到自己的真实优势","把指数基金当作基准，主动策略必须能跑赢它","理解复利与时间的关系，用数学而不是感觉看待长期回报"],
+   goals:["理解回报的三个来源，分清你赚的是哪种钱","承认市场有效性的存在，找到自己的真实优势","把指数基金当作基准，主动策略必须能跑赢它","理解复利与时间的关系，用数学而不是感觉看待长期回报","通过郁金香/日本泡沫/2008 金融危机等历史案例，识别“这次不一样”的泡沫信号"],
    quiz:[
      {q:"长期看，股价 ≈ 什么？", opts:["庄家想让它到哪就到哪","盈利 × 估值倍数","每股净资产","成交量的累积"], ans:1, why:"股价长期由“盈利（锚）×估值倍数（钟摆）”决定。盈利增长和分红可积累，估值会均值回归。"},
      {q:"某策略年化 10% 和 20%，30 年后差距约多少倍？", opts:["1.5 倍","3 倍","6.5 倍","30 倍"], ans:2, why:"1.1^30≈17.4，1.2^30≈237.4，约差 13.6 倍。复利差一点，长期差很多——这也是为什么“少亏”比“多赚”重要。"}]},
@@ -333,6 +382,33 @@ const NODES = {
     actions:["用两句话写：这个案例如何印证“亏损不对称”与“行为金融学”。","检查自己：是否在使用任何形式的杠杆（融资、配资、借钱炒股）？有就立刻停。"],
     quiz:{q:"KKR 收购 RJR 后回报远低于预期，最核心的原因是？",opts:["公司经营太好没机会改善","竞标抬到 109 美元（出价过高）+ 巨额债务 + 1990 信用崩盘","管理层太优秀","没有出售任何资产"],ans:1,why:"竞价战把价格抬到虚高，赢者承担“赢者的诅咒”；叠加巨额债务利息与 1990 年垃圾债市场冻结，杠杆从武器变成绞索。"},
     related:["m0d","m0f","m0g","m5e","m0a","m5b"]},
+  "m0i":{id:"m0i", mod:"m0", icon:"🌷", title:"案例：荷兰郁金香泡沫",
+    summary:"1636–1637 年荷兰：一株稀有郁金香球茎的价格一度超过阿姆斯特丹一栋豪宅，几个月后暴跌 99% 以上。人类历史上第一次有记录的投机泡沫，也是“博傻理论”最纯粹的样本。",
+    deep:"背景：郁金香 16 世纪从奥斯曼传入欧洲，稀有品种被贵族追捧；1634 年起投机升级，普通人涌入，甚至出现“还没开花就转手多次”的期货式交易。1637 年 2 月一场拍卖无人接盘，价格雪崩，一年内涨了几十倍的东西几个月内一文不值。最本质的驱动是博傻：买家明知价格脱离价值，只赌有更傻的人接盘——链条一断，全部归零。任何资产一旦买入理由变成“还会涨、有人接盘”而不是“它值这个价”，泡沫就开始了。",
+    example:"例：1637 年一株“永远的奥古斯都”郁金香球茎的最高喊价，相当于当时阿姆斯特丹运河边一栋豪宅；几个月后球茎几乎免费。换算到今天，就像用一套房换一个“限量款球鞋购买凭证”，然后凭证归零。",
+    points:["历史：1634–1637 荷兰，稀有郁金香球茎价格暴涨几十倍后崩盘 99%+。","机制：纯投机 + 期货式转手 + 博傻接盘，价格完全脱离使用价值。","“这次不一样”的最早版本：当时人们相信郁金香会永远涨。","启示：脱离内在价值的暴涨必然均值回归，但没人知道“何时”。","与现代同构：加密货币、MEME 股、NFT 等泡沫都是同一剧本。","对个人：买入理由写成“还会涨/有人接盘”时，就是离场信号。"],
+    myths:["“稀缺=值钱”：稀缺只支撑价格、不支撑价值；没有现金流与用途，稀缺品随时归零。","“高价还有人买=还会涨”：博傻游戏必然有人接最后一棒，别赌不是你。"],
+    actions:["把“我买入的理由”写下来——如果答案是“还会涨/有人接盘”，停下来。","对比 2020–2021 的 MEME 股/币圈，找出与郁金香的共同点。"],
+    quiz:{q:"郁金香泡沫最本质的驱动是？",opts:["郁金香真的有观赏价值","博傻——赌有人以更高价接盘","政府恶意操纵","天气影响产量"],ans:1,why:"价格完全脱离价值，买家靠“更傻的人接盘”赚钱，链条一旦断裂就崩盘。博傻是郁金香与现代币圈共通的本质。"},
+    related:["m0a","m0f","m0k","m0b"]},
+  "m0j":{id:"m0j", mod:"m0", icon:"🗾", title:"案例：日本泡沫经济",
+    summary:"1985 年广场协议后日元升值 + 连续降息 → 信贷狂潮 → 股市与地价暴涨：日经225 于 1989 年底见顶 38957 点，市盈率高达 60–80 倍；随后崩盘，日本陷入“失去的三十年”。",
+    deep:"链条：1985 年广场协议日元大幅升值，为对冲通缩压力日本央行连续降息 → 热钱涌入股市楼市，企业与个人大规模加杠杆 → 日经225 从约 1.3 万点涨到 1989 年 12 月 29 日的 38957 点（市盈率 60–80 倍），东京地价号称“卖掉东京可买下整个美国”。1990 年央行急转加息，泡沫破裂：日经 3 年跌约 60%，地价连跌约 20 年；企业资产缩水后进入“资产负债表衰退”——不借钱、只还债，经济长期低迷。教训：①货币宽松 + 信贷扩张是泡沫燃料；②60–80 倍的市盈率是荒谬的信号；③高杠杆买房买股的人在破裂时最先被清算；④“东京永不跌”是最贵的一句话。",
+    example:"例：1989 年底日本土地资产总值约为美国土地总值的 4 倍——一个面积只有美国约 1/25 的国家。破裂后，东京写字楼价格一度跌去 80% 以上；用 3 倍杠杆在顶部买房的人，本金早已归零还倒欠银行。",
+    points:["导火索：广场协议(1985)→日元升值→连续降息→信贷扩张。","顶峰：1989-12-29 日经 38957 点，市盈率 60–80 倍，地价天文数字。","破裂：1990 年加息，日经 3 年跌约 60%，地价跌约 20 年。","深层后果：资产负债表衰退，企业从借钱扩张转向还债收缩→失去的三十年。","教训：宽松信贷 + 高杠杆 + 估值荒谬 +“这次不一样”= 泡沫配方。","个人教训：别用高杠杆赌资产“只涨不跌”。"],
+    myths:["“日本是特例，不会重演”：2008 美国次贷、2021 中概/币圈都有相似剧本。","“央行能精准刺破泡沫而不伤经济”：日本央行加息过晚且过猛，说明“烫平”极难。"],
+    actions:["查一下日经225 从 1989 年高点到现在的位置，体会“30 年回本难”。","用“如果跌 60% 我扛得住吗”检验自己的杠杆与仓位。"],
+    quiz:{q:"日本泡沫破裂后经济长期低迷，关键机制是？",opts:["日本人变懒了","资产负债表衰退——从借钱扩张转向还债收缩","政府完全不管","日元大幅贬值"],ans:1,why:"资产价格暴跌使企业资产负债表受损，企业优先还债而非投资，货币宽松也传导不畅——这就是“失去的三十年”的核心机制。"},
+    related:["m0k","m2e","m0d","m5e","m0h"]},
+  "m0k":{id:"m0k", mod:"m0", icon:"🏦", title:"案例：2008 金融危机",
+    summary:"2008 年由美国次贷危机引爆的全球金融危机：银行把“还不起的房贷”打包成证券卖给全世界，杠杆层层叠加，雷曼兄弟倒闭引发连锁反应——现代金融“杠杆 + 传导”的完整教案。",
+    deep:"链条：低利率 → 全民买房 → 银行把次级房贷打包成 MBS/CDO 卖给全球投资者（评级机构还给了 AAA）→ 房价下跌 → 次贷违约 → 持有者巨亏（雷曼、AIG）→ 2008 年 9 月 15 日雷曼破产 → 全球信用冻结 → 股市暴跌（标普500 自 2007 年高点最大回撤约 57%）→ 各国救市。三大本质：①把高风险资产包装成“高评级”卖给不懂的人（信息不对称）；②金融机构用极高杠杆，损失被放大到无法承受；③金融产品把风险传导到全球——你以为分散了，其实所有人持有的是同一批违约房贷。对个人的教训：看不懂的产品不买、控制杠杆、留足现金与债券缓冲；危机同时是机会——恐慌时优质资产打折（巴菲特 2008 年抄底）。",
+    example:"例：一个没有收入证明的人贷款买房，银行把这类“次级贷款”打包成债券（CDO）卖给欧洲的退休基金，评级机构给 AAA。房价一跌，链条上所有人一起亏——你买的所谓“全球分散资产”，底层其实是同一批违约房贷。",
+    points:["链条：低利率→次贷→MBS/CDO 包装→全球销售→房价跌→违约→雷曼 2008-09-15 破产→全球信用冻结。","标普500 自 2007 年高点最大回撤约 57%。","三大本质：高杠杆、复杂产品掩盖风险、风险全球传导。","评级机构失职：把次贷包装成 AAA。","个人教训：看不懂的产品不买、控制杠杆、留现金/债券缓冲。","危机也是机会：恐慌时优质资产打折（巴菲特 2008 抄底高盛/通用）。"],
+    myths:["“分散买全球资产就安全”：2008 证明危机中相关性趋近 1，全球同跌。","“政府不会让大银行倒”：雷曼真倒了，系统性风险真实存在。"],
+    actions:["把“看不懂的产品不买”写进自己的规则。","检查持仓：有没有“包装复杂、说不清底层资产”的产品？"],
+    quiz:{q:"2008 危机中“你以为分散、其实集中”指的是？",opts:["股票买得太少","全球投资者持有的是同一批违约房贷包装的证券","基金公司太多","政府隐瞒数据"],ans:1,why:"次贷被切成无数证券卖给全世界，表面分散，底层都是同一批美国房贷。房价一跌，所有“分散”的持有者一起亏损。"},
+    related:["m0h","m0j","m5e","m0d","m0c"]},
   /* ---------- 模块1：基础认知 ---------- */
   "m1a":{id:"m1a", mod:"m1", icon:"📜", title:"股票的本质",
     summary:"股票代表公司所有权的一部分。你买的不是一串代码，而是一笔未来现金流的索取权：公司赚钱你分享（分红与成长），公司亏钱你承担。",
@@ -670,7 +746,7 @@ const NODES = {
     related:["m7c","m7d","m7f","m5f","m6e"]}
 };
 /* ================= 图谱数据 ================= */
-const PATH = ["m1a","m1b","m1c","m0e","m1d","m0a","m0b","m0c","m0d","m0f","m0g","m0h","m2a","m2b","m2d","m2c","m2e","m3a","m3b","m3c","m3d","m4a","m4b","m4d","m4c","m5a","m5e","m5c","m5f","m5b","m5d","m6a","m6b","m6c","m6d","m6e","m7a","m7b","m7c","m7d","m7e","m7f","m7g","m7h"];
+const PATH = ["m1a","m1b","m1c","m0e","m1d","m0a","m0b","m0c","m0d","m0f","m0g","m0h","m0i","m0j","m0k","m2a","m2b","m2d","m2c","m2e","m3a","m3b","m3c","m3d","m4a","m4b","m4d","m4c","m5a","m5e","m5c","m5f","m5b","m5d","m6a","m6b","m6c","m6d","m6e","m7a","m7b","m7c","m7d","m7e","m7f","m7g","m7h"];
 const TOPICS = PATH.slice();
 const TOTAL = TOPICS.length;
 const modById = Object.fromEntries(MODULES.map(m=>[m.id,m]));
@@ -1021,6 +1097,25 @@ document.addEventListener("keydown", e=>{
   else if(e.key==="ArrowLeft" && pi>0) selectNode(PATH[pi-1]);
   else if(e.key==="Escape") clearSelection();
 });
+
+
+/* ================= theme ================= */
+(function(){
+  let theme="light";
+  try{ theme=localStorage.getItem("ghnav-theme")||"light"; }catch(e){}
+  document.documentElement.setAttribute("data-theme", theme==="dark"?"dark":"light");
+  const btn=document.getElementById("themeBtn");
+  if(btn){
+    const sync=()=>{ btn.textContent = document.documentElement.getAttribute("data-theme")==="dark" ? "🌙 暗色" : "☀️ 亮色"; };
+    sync();
+    btn.addEventListener("click", ()=>{
+      const next = document.documentElement.getAttribute("data-theme")==="dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try{ localStorage.setItem("ghnav-theme", next); }catch(e){}
+      sync();
+    });
+  }
+})();
 
 /* ================= init ================= */
 alpha = 1;
