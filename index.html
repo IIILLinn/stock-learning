@@ -223,6 +223,27 @@ html[data-theme="light"] .brand .logo{ background:linear-gradient(135deg,#f5d77a
 html[data-theme="light"] .empty-state{ color:#98a1b0; }
 html[data-theme="light"] .node .ball{ stroke-width:1.8; }
 body, header, #left, #right, .pmod, .chip, .quizopt, .hbtn{ transition:background .3s, color .3s, border-color .3s; }
+
+/* ========== 连线优化 ========== */
+.edge{ fill:none; stroke-linecap:round; }
+.edge.pre{ stroke-width:1.7; }
+html[data-theme="dark"] .edge.pre{ stroke:rgba(255,255,255,.45); }
+html[data-theme="light"] .edge.pre{ stroke:rgba(80,100,140,.62); }
+html[data-theme="dark"] .edge.rel{ stroke:rgba(255,255,255,.2); stroke-width:1.05; }
+html[data-theme="light"] .edge.rel{ stroke:rgba(80,100,140,.3); stroke-width:1.05; }
+html[data-theme="dark"] .edge.belong{ stroke:rgba(255,255,255,.09); stroke-width:.9; }
+html[data-theme="light"] .edge.belong{ stroke:rgba(80,100,140,.17); stroke-width:.9; }
+/* 过滤按钮：隐藏某类线 */
+#graph svg.hide-pre .edge.pre:not(.keep){ opacity:0 !important; }
+#graph svg.hide-rel .edge.rel:not(.keep){ opacity:0 !important; }
+#graph svg.hide-belong .edge.belong:not(.keep){ opacity:0 !important; }
+.edgelegend i.pre{ border-top:2px solid; }
+.edgelegend i.belong{ border-top:1px solid; opacity:.55; }
+.edgefilters{ display:inline-flex; gap:6px; margin-left:4px; }
+.fbtn{ background:transparent; border:1px solid var(--line); color:var(--muted); font-size:11px; border-radius:14px; padding:2px 10px; cursor:pointer; transition:.15s; }
+.fbtn:hover{ color:var(--text); border-color:var(--accent); }
+.fbtn.off{ opacity:.35; text-decoration:line-through; }
+html[data-theme="light"] .fbtn{ color:#5c6878; }
 </style>
 </head>
 <body>
@@ -801,15 +822,24 @@ nodes.forEach(n=>{
   gNodes.appendChild(g); nodeEls[n.id]=g;
 });
 const edgeEls = links.map(l=>{
-  const line = document.createElementNS(svgNS,"line");
-  line.setAttribute("class",`edge ${l.k} e-${nodeById[l.s].mod} e-${nodeById[l.t].mod}`);
-  gEdges.appendChild(line);
-  return {line, l};
+  const path = document.createElementNS(svgNS,"path");
+  path.setAttribute("class",`edge ${l.k} e-${nodeById[l.s].mod} e-${nodeById[l.t].mod}`);
+  gEdges.appendChild(path);
+  return {path, l};
 });
 
+function edgePath(l){
+  const a=nodeById[l.s], b=nodeById[l.t];
+  const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+  let dx=b.x-a.x, dy=b.y-a.y; const len=Math.hypot(dx,dy)||1;
+  let off = l.k==="belong" ? 0 : (l.k==="pre" ? Math.min(len*0.05,14) : Math.min(len*0.11,36));
+  if(off){ let h=7; const key=l.s+"|"+l.t; for(let i=0;i<key.length;i++) h=(h*31+key.charCodeAt(i))|0; if(h<0) off=-off; }
+  const px=-dy/len*off, py=dx/len*off;
+  return `M ${a.x} ${a.y} Q ${(mx+px).toFixed(1)} ${(my+py).toFixed(1)} ${b.x} ${b.y}`;
+}
 function render(){
   nodes.forEach(n=>{ const g=nodeEls[n.id]; g.setAttribute("transform",`translate(${n.x} ${n.y})`); });
-  edgeEls.forEach(({line,l})=>{ const a=nodeById[l.s], b=nodeById[l.t]; line.setAttribute("x1",a.x); line.setAttribute("y1",a.y); line.setAttribute("x2",b.x); line.setAttribute("y2",b.y); });
+  edgeEls.forEach(({path,l})=>{ path.setAttribute("d", edgePath(l)); });
 }
 
 /* ================= force simulation ================= */
@@ -824,10 +854,17 @@ function physics(){
   for(let i=0;i<nodes.length;i++){ const a=nodes[i];
     for(let j=i+1;j<nodes.length;j++){ const b=nodes[j]; let dx=b.x-a.x, dy=b.y-a.y; let d=Math.hypot(dx,dy)||1;
       const minD=(a.r+b.r)*0.9; if(d<minD) d=minD;
-      let f=Math.min(6400/(d*d), 11)*alpha; f=Math.min(f, 60);
+      let f=Math.min(6400/(d*d), 11)*alpha;
+      if(a.hub&&b.hub) f*=2.6;
+      else if(a.mod!==b.mod) f*=1.3;
+      f=Math.min(f, 60);
       const fx=dx/d*f, fy=dy/d*f; a.vx-=fx; a.vy-=fy; b.vx+=fx; b.vy+=fy;
     }
   }
+
+  for(const n of nodes){ if(n.hub) continue; const hub=nodeById["hub-"+n.mod];
+    let dx=hub.x-n.x, dy=hub.y-n.y; const d=Math.hypot(dx,dy)||1;
+    const f=(d-105)*0.012*alpha; n.vx+=dx/d*f; n.vy+=dy/d*f; }
   const cx=W()/2, cy=H()/2;
   for(const n of nodes){ n.vx+=(cx-n.x)*0.0042*alpha; n.vy+=(cy-n.y)*0.0042*alpha; }
   for(const n of nodes){ n.vx*=damp; n.vy*=damp; n.x+=n.vx; n.y+=n.vy; }
@@ -879,7 +916,7 @@ function selectNode(id){
   const keep=neighbors(id);
   nodes.forEach(n=>{ if(keep.has(n.id)) nodeEls[n.id].classList.add("keep"); });
   nodeEls[id].classList.add("selected");
-  edgeEls.forEach(({line,l})=>{ if(keep.has(l.s)&&keep.has(l.t)) line.classList.add("keep"); });
+  edgeEls.forEach(({path,l})=>{ if(keep.has(l.s)&&keep.has(l.t)) path.classList.add("keep"); });
   renderDetail(id);
   updatePathActive(id);
 }
@@ -951,8 +988,18 @@ MODULES.forEach(m=>{
   legend.appendChild(lg);
 });
 const elg=document.createElement("span"); elg.className="edgelegend";
-elg.innerHTML=`<span><i></i>先修顺序</span><span><i class="dashed"></i>关联延伸</span>`;
+elg.innerHTML=`<span><i class="pre"></i>先修</span><span><i class="dashed"></i>关联</span><span><i class="belong"></i>归属</span>`;
 legend.appendChild(elg);
+const fb=document.createElement("span"); fb.className="edgefilters";
+[["先修","pre"],["关联","rel"],["归属","belong"]].forEach(([txt,k])=>{
+  const f=document.createElement("button"); f.type="button"; f.className="fbtn"; f.title="点击 显示/隐藏 该类连线"; f.textContent=txt;
+  f.addEventListener("click", ()=>{
+    f.classList.toggle("off");
+    svg.classList.toggle("hide-"+k, f.classList.contains("off"));
+  });
+  fb.appendChild(f);
+});
+legend.appendChild(fb);
 
 /* ================= search ================= */
 const searchInput=document.getElementById("search");
